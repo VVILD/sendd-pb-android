@@ -7,7 +7,7 @@
     <ListView
         android:id="@+id/allordersListView"
         android:layout_width="match_parent"
-        android:background="@android:color/white"
+        
          android:layout_height="wrap_content">
     </ListView>
 
