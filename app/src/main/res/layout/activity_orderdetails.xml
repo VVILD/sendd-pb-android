@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/orderTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Order number - I"
+        android:textSize="18dp" />
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:id="@+id/ivItemImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/orderTitle"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/sample" />
+
+    <TextView
+        android:id="@+id/nameLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivItemImage"
+        android:text="Full Name: Harsh Karanpuria" />
+
+    <TextView
+        android:id="@+id/addressLabel"
+        android:layout_marginLeft="15dp"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameLabel"
+        android:text="Address: A-3 35 green fields JVLR andheri east Mumbai 400093" />
+
+    <TextView
+        android:id="@+id/phoneLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addressLabel"
+        android:text="Phone Number: 9920899602 " />
+
+    <TextView
+        android:id="@+id/landmarkLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phoneLabel"
+        android:text="LandMark: Opp. Kalpataru" />
+
+    <TextView
+        android:id="@+id/pickuptimeLable"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/landmarkLabel"
+        android:text="PickUp Time: 1:30 PM " />
+<LinearLayout
+    android:layout_marginTop="20dp"
+    android:layout_below="@+id/pickuptimeLable"
+    android:layout_width="match_parent"
+    android:weightSum="100"
+    android:layout_height="wrap_content">
+    <Button
+        android:layout_marginLeft="20dp"
+        android:background="@color/blue"
+        android:layout_weight="50"
+
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Process Order"/>
+    <Button
+        android:layout_marginRight="20dp"
+        android:background="@color/blue"
+        android:layout_weight="50"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:text="Cancel"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>
+
+
+</RelativeLayout>
