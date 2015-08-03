@@ -1,9 +1,11 @@
 package co.sendddelivery.GetterandSetter;
 
+import java.io.Serializable;
+
 /**
  * Created by harshkaranpuria on 7/25/15.
  */
-public class Business_Order {
+public class Business_Order implements Serializable {
     private String address1;
     private String address2;
     private String b_address;
@@ -12,7 +14,55 @@ public class Business_Order {
     private String b_contact_mob;
     private String b_contact_office;
     private String b_name;
-    private String b_pickup_time;
+    private String pickup_time;
+    private String order_id;
+
+
+
+    private String pickup_time_range;
+    private String b_username;
+    private Boolean isComplete;
+
+    public String getOrder_id() {
+        return order_id;
+    }
+
+    public void setOrder_id(String order_id) {
+        this.order_id = order_id;
+    }
+
+    public Boolean getIsComplete() {
+        return isComplete;
+    }
+
+    public void setIsComplete(Boolean isComplete) {
+        this.isComplete = isComplete;
+    }
+
+    public String getB_username() {
+        return b_username;
+    }
+
+    public void setB_username(String b_username) {
+        this.b_username = b_username;
+    }
+
+    public String getPickup_time_range() {
+        return pickup_time_range;
+    }
+
+    public void setPickup_time_range(String pickup_time_range) {
+        this.pickup_time_range = pickup_time_range;
+    }
+
+    public String getPickup_time() {
+        return pickup_time;
+    }
+
+    public void setPickup_time(String pickup_time) {
+        this.pickup_time = pickup_time;
+    }
+
     private String b_pincode;
     private String name;
     private String phone;
@@ -81,14 +131,6 @@ public class Business_Order {
 
     public void setB_name(String b_name) {
         this.b_name = b_name;
-    }
-
-    public String getB_pickup_time() {
-        return b_pickup_time;
-    }
-
-    public void setB_pickup_time(String b_pickup_time) {
-        this.b_pickup_time = b_pickup_time;
     }
 
     public String getB_pincode() {

@@ -33,7 +33,7 @@ public class NetworkUtils {
             "yyyy-MM-dd"
     };
     //   public static String END_POINT="http://128.199.185.217/api/v2/";
-    public static String END_POINT = "http://test.sendmates.com/pb_api/v1/";
+    public static String END_POINT = "http://test.sendmates.com/";
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
             .registerTypeAdapter(Date.class, new DateDeserializer())
             .create();

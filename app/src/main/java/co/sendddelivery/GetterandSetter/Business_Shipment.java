@@ -1,9 +1,11 @@
 package co.sendddelivery.GetterandSetter;
 
+import java.io.Serializable;
+
 /**
  * Created by harshkaranpuria on 7/25/15.
  */
-public class Business_Shipment {
+public class Business_Shipment implements Serializable {
     private String name;
     private String price;
     private String quantity;

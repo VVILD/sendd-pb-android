@@ -1,63 +1,44 @@
 package co.sendddelivery.Utils;
 
+import co.sendddelivery.GetterandSetter.BusinessPatch;
+import co.sendddelivery.GetterandSetter.CustomerPatch;
+import co.sendddelivery.GetterandSetter.LocationParameters;
+import co.sendddelivery.GetterandSetter.Login;
 import retrofit.Callback;
 import retrofit.client.Response;
+import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Headers;
+import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
  * Created by Kuku on 17/02/15.
  */
 public interface NetworkCalls {
-    @GET("/pending_orders/")
-    void register(@Query("pb_ph") String pb_ph, Callback<Response> responseCallback);
-//
-//    @PUT("/user/{user_uri}/")
-//    void verify(@Path("user_uri") String user_uri, @Body Otp new_otp, Callback<Users> userverified);
-//
-//
-//    @Headers("X-HTTP-Method-Override: PATCH")
-//    @POST("/user/{user_number}/")
-//    void sendGCMID(@Path("user_number") String user_number, @Body RegisterUser registeruser, Callback<RegisterUser> registerUserCallback);
-//
-//    @POST("/order/")
-//    void order(@Body Orders orders, Callback<Orders> order);
-//
-//    @POST("/dateapp/")
-//    void getDate(@Body ShippingDateTime shippingDateTime, Callback<ShippingDateTime> shippingDateTimeCallback);
-//
-//    @GET("/shipment/{tracking_no}/")
-//    void getShipmentDetails(@Path("tracking_no") String tracking_no, Callback<ShipmentDetails> shipmentDetailsCallback);
-//
-//    @GET("/shipment/")
-//    void getPreviousShipments(@Query("q") String q, @Query("limit") String limit, Callback<Response> Shipments);
-//
-//    @POST("/priceapp/")
-//    void getPrice(@Body ShippingPrice shippingPrice, Callback<ShippingPrice> shippingPriceCallback);
-//
-//
-//    @POST("/promocheck/")
-//    void checkPromo(@Body Promo promo, Callback<Promo> promoCallback);
-//
-//    @POST("/pincodecheck/")
-//    void checkPincode(@Body Pincode pincode, Callback<Pincode> pincodeCallback);
-//
-//    @Multipart
-//    @POST("/shipment/")
-//    void shipment(@Part("img") TypedFile img,
-//                  @Part("drop_name") String drop_name,
-//                  @Part("drop_phone") String drop_phone,
-//                  @Part("drop_flat_no") String drop_flat_no,
-//                  @Part("drop_locality") String drop_locality,
-//                  @Part("drop_city") String drop_city,
-//                  @Part("drop_state") String drop_state,
-//                  @Part("drop_country") String drop_country,
-//                  @Part("drop_pincode") String drop_pincode,
-//                  @Part("order") String order,
-//                  @Part("category") String category,
-//                  Callback<Shipment> shipment);
-//
-//    @POST("/loginsession/")
-//    void login(@Body Register register, Callback<Register> registerCallback);
+    @GET("/pb_api/v1/pending_orders/")
+    void getOrders(@Query("pb_ph") String pb_ph, Callback<Response> responseCallback);
+
+    @GET("/pb_api/v1/barcode_scan/")
+    void getorder(@Query("bid") String bid, Callback<Response> responseCallback);
+
+    @GET("/pb_api/v1/pb_users/{phone}/")
+    void login(@Path("phone") String phone,Callback<Login> loginCallback);
+
+
+    @Headers({
+            "X-HTTP-Method-Override: PATCH",
+            "Authorization:A"
+    })
+    @POST("/bapi/v1/product/{trackingId}/")
+    void updateBusiness(@Path("trackingId") String trackingId, @Body BusinessPatch registeruser, Callback<BusinessPatch> customerPatchCallback);
+
+    @Headers("X-HTTP-Method-Override: PATCH")
+    @POST("/api/v2/shipment/{trackingId}/")
+    void updateCustomer(@Path("trackingId") String trackingId, @Body CustomerPatch registeruser, Callback<CustomerPatch> customerPatchCallback);
+
+    @POST("/pb_api/v1/pb_locations/")
+    void sendlocation( @Body LocationParameters locationParameters, Callback<Response> customerPatchCallback);
 
 }

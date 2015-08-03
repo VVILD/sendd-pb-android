@@ -1,14 +1,26 @@
 package co.sendddelivery.GetterandSetter;
 
+import java.util.ArrayList;
+
 /**
  * Created by harshkaranpuria on 7/25/15.
  */
 public class Pending_Orders {
 
     private Business_Order Business_Order;
-    private Business_Shipment Business_Shipment;
-    private Customer_shipment Customer_shipment;
+    private ArrayList<Business_Shipment> Business_Shipment;
+    private ArrayList<Customer_shipment>Customer_shipment;
     private Customer_Order Customer_Order;
+    private Boolean isBusiness;
+
+    public Boolean getIsBusiness() {
+        return isBusiness;
+    }
+
+    public void setIsBusiness(Boolean isBusiness) {
+        this.isBusiness = isBusiness;
+    }
+
 
     public co.sendddelivery.GetterandSetter.Business_Order getBusiness_Order() {
         return Business_Order;
@@ -18,19 +30,19 @@ public class Pending_Orders {
         Business_Order = business_Order;
     }
 
-    public co.sendddelivery.GetterandSetter.Business_Shipment getBusiness_Shipment() {
+    public ArrayList<co.sendddelivery.GetterandSetter.Business_Shipment> getBusiness_Shipment() {
         return Business_Shipment;
     }
 
-    public void setBusiness_Shipment(co.sendddelivery.GetterandSetter.Business_Shipment business_Shipment) {
+    public void setBusiness_Shipment(ArrayList<co.sendddelivery.GetterandSetter.Business_Shipment> business_Shipment) {
         Business_Shipment = business_Shipment;
     }
 
-    public co.sendddelivery.GetterandSetter.Customer_shipment getCustomer_shipment() {
+    public ArrayList<co.sendddelivery.GetterandSetter.Customer_shipment> getCustomer_shipment() {
         return Customer_shipment;
     }
 
-    public void setCustomer_shipment(co.sendddelivery.GetterandSetter.Customer_shipment customer_shipment) {
+    public void setCustomer_shipment(ArrayList<co.sendddelivery.GetterandSetter.Customer_shipment> customer_shipment) {
         Customer_shipment = customer_shipment;
     }
 

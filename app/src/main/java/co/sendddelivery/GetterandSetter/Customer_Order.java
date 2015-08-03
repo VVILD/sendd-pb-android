@@ -1,14 +1,16 @@
 package co.sendddelivery.GetterandSetter;
 
+import java.io.Serializable;
+
 /**
  * Created by harshkaranpuria on 7/25/15.
  */
-public class Customer_Order {
+public class Customer_Order implements Serializable {
     private String address;
     private String flat_no;
     private String name;
     private String pincode;
-    private String time;
+    private String pickup_time;
     private String user;
 
     public String getAddress() {
@@ -34,20 +36,26 @@ public class Customer_Order {
     public void setPincode(String pincode) {
         this.pincode = pincode;
     }
-
-    public String getTime() {
-        return time;
+    public String getPickup_time() {
+        return pickup_time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setPickup_time(String pickup_time) {
+        this.pickup_time = pickup_time;
     }
 
-    public String getUser() {
+        public String getUser() {
         return user;
     }
 
     public void setUser(String user) {
         this.user = user;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

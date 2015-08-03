@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <TextView
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Order number - I"
+        android:text="Business Orders"
         android:textSize="18dp" />
 
 
@@ -55,45 +56,24 @@
         android:layout_marginTop="10dp"
         android:text="PickUp Time: 1:30 PM "
         android:textSize="18sp" />
-    <TextView
-        android:id="@+id/TVone"
-        android:text="--------All Shpiments--------"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:textStyle="bold"
-        android:textColor="@color/blue"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/pickuptimeLable"
 
-        android:layout_height="wrap_content" />
     <ListView
-        android:clickable="false"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/TVone"
-        android:id="@+id/shipmentList"
-        android:layout_width="match_parent"
-        android:layout_above="@+id/LLone"
-        android:layout_height="wrap_content">
-    </ListView>
-    <LinearLayout
-        android:id="@+id/LLone"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/businesssubordersListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:weightSum="100">
-
-
-        <Button
-            android:id="@+id/bProcess"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:background="@color/blue"
-            android:text="Process"
-            android:textColor="@color/white" />
-    </LinearLayout>
-
+        android:layout_below="@+id/pickuptimeLable"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@+id/bScan_order"
+        android:background="@android:color/white" />
+    <Button
+        android:text="Scan QR Code"
+        android:id="@+id/bScan_order"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:background="@color/blue"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        />
 
 </RelativeLayout>

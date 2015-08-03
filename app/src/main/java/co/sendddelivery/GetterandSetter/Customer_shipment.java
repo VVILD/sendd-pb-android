@@ -1,14 +1,26 @@
 package co.sendddelivery.GetterandSetter;
 
+import java.io.Serializable;
+
 /**
  * Created by harshkaranpuria on 7/25/15.
  */
-public class Customer_shipment {
+public class Customer_shipment implements Serializable {
 
     private String category;
     private String cost_of_courier;
-    private String drop_address;
+    private Drop_address drop_address;
     private String drop_name;
+    private String real_tracking_no;
+
+    public String getReal_tracking_no() {
+        return real_tracking_no;
+    }
+
+    public void setReal_tracking_no(String real_tracking_no) {
+        this.real_tracking_no = real_tracking_no;
+    }
+
     private String drop_phone;
     private String img;
     private String item_name;
@@ -31,11 +43,11 @@ public class Customer_shipment {
         this.cost_of_courier = cost_of_courier;
     }
 
-    public String getDrop_address() {
+    public Drop_address getDrop_address() {
         return drop_address;
     }
 
-    public void setDrop_address(String drop_address) {
+    public void setDrop_address(Drop_address drop_address) {
         this.drop_address = drop_address;
     }
 

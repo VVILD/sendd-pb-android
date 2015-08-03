@@ -18,19 +18,60 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
         <activity
-            android:name=".Activity.Activity_Login"
-            android:label="@string/app_name" >
+            android:name=".Activity.Activity_SplashScreen"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.Activity_Login"
+            android:label="@string/app_name" >
+
+        </activity>
+        <activity
+            android:launchMode="singleInstance"
             android:name=".Activity.Activity_Orders"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.Business_orders_sublist"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.Customer_OrderDetails"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.CustomerOrderSubDetails"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.Business_order_details"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.Activity_Verify"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".Activity.Business_order_details_fromBarcode"
+            android:label="@string/app_name" >
+        </activity>
+        <service android:name=".Activity.LocationService" />
+
     </application>
 
 </manifest>

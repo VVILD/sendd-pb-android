@@ -1,0 +1,359 @@
+package co.sendddelivery.Activity;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import co.sendddelivery.GetterandSetter.BusinessAllOrders;
+import co.sendddelivery.GetterandSetter.Business_Order;
+import co.sendddelivery.GetterandSetter.Business_Shipment;
+import co.sendddelivery.GetterandSetter.Customer_Order;
+import co.sendddelivery.GetterandSetter.Customer_shipment;
+import co.sendddelivery.GetterandSetter.Drop_address;
+import co.sendddelivery.GetterandSetter.Pending_Orders;
+import co.sendddelivery.R;
+import co.sendddelivery.Utils.NetworkUtils;
+import co.sendddelivery.Utils.Utils;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
+
+public class Business_orders_sublist extends Activity {
+    List<Pending_Orders> mPending_Order_list;
+    ArrayList<BusinessAllOrders> BusinessallOrders;
+    BusinessOrders_Adapter madapter;
+    String businessUserName;
+    ArrayList<BusinessAllOrders> BAO;
+    Button scanQRCODE;
+    ArrayList<Pending_Orders> Pending_Orders_List = new ArrayList<>();
+    NetworkUtils mnetworkutils = new NetworkUtils(this);
+    ProgressDialog mprogress;
+    Utils utils, mUtils;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_business_orders_sublist);
+        TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
+        TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
+        TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
+        TextView pickuptimeLable = (TextView) findViewById(R.id.pickuptimeLable);
+        scanQRCODE = (Button) findViewById(R.id.bScan_order);
+        final String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
+        final String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
+
+        final String pendingOrders = getIntent().getStringExtra("PendingOrderList");
+        businessUserName = getIntent().getStringExtra("Business_username");
+        Gson GS = new Gson();
+        mPending_Order_list = Arrays.asList(GS.fromJson(pendingOrders, Pending_Orders[].class));
+        BAO = ShowAddressToList();
+        if (BAO.size() != 0) {
+            nameLabel.setText(BAO.get(0).getBO().getB_business_name());
+            addressLabel.setText(BAO.get(0).getBO().getB_address());
+            phoneLabel.setText(BAO.get(0).getBO().getB_contact_mob() + " , " + BAO.get(0).getBO().getB_contact_office());
+            pickuptimeLable.setText(BAO.get(0).getBO().getPickup_time_range());
+        } else {
+            Intent i = new Intent(getApplicationContext(), Activity_Orders.class);
+            startActivity(i);
+            finish();
+        }
+        ListView lv_Saved_Address = (ListView) findViewById(R.id.businesssubordersListView);
+        madapter = new BusinessOrders_Adapter(Business_orders_sublist.this, R.layout.businessorders_list_item_list, ShowAddressToList());
+
+//        if(getIntent().getStringExtra("ABO")!= null){
+//            final String BUsiness_shipment_object = getIntent().getStringExtra("ABO");
+//            BAllOrder = Arrays.asList(GS.fromJson(BUsiness_shipment_object, BusinessAllOrders[].class));
+//            madapter = new BusinessOrders_Adapter(Business_orders_sublist.this, R.layout.businessorders_list_item_list,BAllOrder);
+//        }else {
+        //}
+        lv_Saved_Address.setAdapter(madapter);
+        lv_Saved_Address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                Intent i = new Intent(getApplicationContext(), Business_order_details.class);
+                Gson GS = new Gson();
+                String BS = GS.toJson(BAO.get(position).getBS());
+                String BO = GS.toJson(BAO.get(position).getBO());
+                i.putExtra("Business_Shipment", BS);
+                i.putExtra("Business_Order", BO);
+                i.putExtra("position", position);
+                i.putExtra("pendingOrderId", BAO.get(position).getPendingOrderId());
+                i.putExtra("OrderName", BAO.get(position).getOrder_name());
+                i.putExtra("Business_username", ForwardIntent_UserName);
+                i.putExtra("PendingOrderList", ForwardIntent_POL);
+                startActivity(i);
+                finish();
+
+            }
+        });
+        scanQRCODE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new IntentIntegrator(Business_orders_sublist.this).initiateScan();
+
+            }
+        });
+    }
+
+    public class BusinessOrder_holder {
+        private TextView Order_Name;
+    }
+
+    //Set up Address Adapter
+    public class BusinessOrders_Adapter extends ArrayAdapter<BusinessAllOrders> {
+
+        private Context c;
+        private List<BusinessAllOrders> address_list;
+
+        public BusinessOrders_Adapter(Context context, int resource, List<BusinessAllOrders> objects) {
+            super(context, resource, objects);
+            this.c = context;
+            this.address_list = objects;
+        }
+
+
+        @Override
+        public void add(BusinessAllOrders object) {
+            super.add(object);
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return address_list.size();
+        }
+
+        @Override
+        public BusinessAllOrders getItem(int position) {
+            return super.getItem(position);
+        }
+
+        @Override
+        public int getPosition(BusinessAllOrders item) {
+            return super.getPosition(item);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return super.getItemId(position);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            BusinessOrder_holder Business_holder;
+            if (convertView == null) {
+                //initialize holder
+                Business_holder = new BusinessOrder_holder();
+                LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.businessorders_list_item_list, parent, false);
+
+                Business_holder.Order_Name = (TextView) convertView.findViewById(R.id.Order_Name);
+                convertView.setTag(Business_holder);
+            } else {
+                Business_holder = (BusinessOrder_holder) convertView.getTag();
+            }
+            //setup list objects
+//            if(address_list.get(position).getIsComplete()){
+//                convertView.setBackgroundColor( Color.argb(0x80, 0x20, 0xa0, 0x40));
+//            }
+            Business_holder.Order_Name.setText(address_list.get(position).getOrder_name());
+
+            return convertView;
+        }
+        //Get all Saved Addresses in Address_Receiver DB.
+
+
+    }
+
+    public ArrayList<BusinessAllOrders> ShowAddressToList() {
+        int counter = 1;
+        int pendingorderId = 0;
+        BusinessallOrders = new ArrayList<>();
+        for (int i = 0; i < mPending_Order_list.size(); i++) {
+            BusinessAllOrders allorders = new BusinessAllOrders();
+
+            if (mPending_Order_list.get(i).getIsBusiness()) {
+                if (mPending_Order_list.get(i).getBusiness_Order().getB_username().equals(businessUserName)) {
+                    if (!mPending_Order_list.get(i).getBusiness_Order().getIsComplete()) {
+                        allorders.setOrder_name("Order-" + mPending_Order_list.get(i).getBusiness_Order().getOrder_id() + "   " + mPending_Order_list.get(i).getBusiness_Order().getName());
+                        allorders.setBO(mPending_Order_list.get(i).getBusiness_Order());
+                        allorders.setBS(mPending_Order_list.get(i).getBusiness_Shipment());
+                        allorders.setPendingOrderId(pendingorderId);
+                        BusinessallOrders.add(allorders);
+                        counter++;
+                    }
+                }
+            }
+            pendingorderId++;
+        }
+
+        return BusinessallOrders;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        final String barcodevalue;
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Log.d("MainActivity", "Cancelled scan");
+            } else {
+                Log.d("MainActivity", "Scanned");
+                mUtils = new Utils(Business_orders_sublist.this);
+                utils = new Utils(Business_orders_sublist.this);
+                mprogress = new ProgressDialog(Business_orders_sublist.this);
+                mprogress.setMessage("Please wait.");
+                mprogress.setCancelable(false);
+                mprogress.setIndeterminate(true);
+                if (mnetworkutils.isnetconnected()) {
+                    barcodevalue = result.getContents();
+                    Log.i("barcodevalue",barcodevalue);
+                    mprogress.show();
+                    mnetworkutils.getapi().getorder(barcodevalue, new Callback<Response>() {
+                                @Override
+                                public void success(Response response, Response response2) {
+                                    if (mprogress.isShowing()) {
+                                        mprogress.dismiss();
+                                    }
+
+                                    BufferedReader reader;
+                                    StringBuilder sb = new StringBuilder();
+                                    try {
+                                        reader = new BufferedReader(new InputStreamReader(response.getBody().in()));
+                                        String line;
+                                        try {
+                                            while ((line = reader.readLine()) != null) {
+                                                sb.append(line);
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    String result = sb.toString();
+                                    Log.i("ultresult", result);
+                                    try {
+                                        JSONObject jObj = new JSONObject(result);
+                                        JSONArray pending_orders = jObj.getJSONArray("pending_orders");
+                                        for (int j = 0; j < pending_orders.length(); j++) {
+                                            Pending_Orders PO = new Pending_Orders();
+                                            JSONObject booking = pending_orders.getJSONObject(j);
+                                            PO.setIsBusiness(true);
+                                            JSONObject Business_order = booking.getJSONObject("order");
+                                            Business_Order BO = new Business_Order();
+                                            BO.setAddress1(Business_order.getString("address1"));
+                                            BO.setAddress2(Business_order.getString("address2"));
+                                            BO.setB_address(Business_order.getString("b_address"));
+                                            BO.setB_business_name(Business_order.getString("b_business_name"));
+                                            BO.setB_city(Business_order.getString("b_city"));
+                                            BO.setB_contact_mob(Business_order.getString("b_contact_mob"));
+                                            BO.setB_contact_office(Business_order.getString("b_contact_office"));
+                                            BO.setB_name(Business_order.getString("b_name"));
+                                            BO.setOrder_id(Business_order.getString("order_id"));
+                                            BO.setPickup_time(Business_order.getString("pickup_time"));
+                                            BO.setB_pincode(Business_order.getString("b_pincode"));
+                                            BO.setB_state(Business_order.getString("b_state"));
+                                            BO.setIsComplete(false);
+                                            BO.setName(Business_order.getString("name"));
+                                            BO.setPickup_time_range(Business_order.getString("pickup_time_range"));
+                                            BO.setPhone(Business_order.getString("phone"));
+                                            BO.setB_username(Business_order.getString("b_username"));
+                                            BO.setB_pincode(Business_order.getString("pincode"));
+                                            ArrayList<Business_Shipment> Business_Shpiment_List = new ArrayList<>();
+                                            JSONArray Business_shipment = booking.getJSONArray("shipments");
+                                            for (int k = 0; k < Business_shipment.length(); k++) {
+                                                Business_Shipment BS = new Business_Shipment();
+                                                BS.setName(Business_shipment.getJSONObject(k).getString("name"));
+                                                BS.setPrice(Business_shipment.getJSONObject(k).getString("price"));
+                                                BS.setQuantity(Business_shipment.getJSONObject(k).getString("quantity"));
+                                                BS.setReal_tracking_no(Business_shipment.getJSONObject(k).getString("real_tracking_no"));
+                                                BS.setShipping_cost(Business_shipment.getJSONObject(k).getString("shipping_cost"));
+                                                BS.setSku(Business_shipment.getJSONObject(k).getString("sku"));
+                                                BS.setWeight(Business_shipment.getJSONObject(k).getString("weight"));
+                                                Business_Shpiment_List.add(BS);
+                                            }
+                                            PO.setBusiness_Order(BO);
+                                            PO.setBusiness_Shipment(Business_Shpiment_List);
+                                            Pending_Orders_List.add(PO);
+                                            Log.i("String.valueOf(Pending_Orders_List.size())",String.valueOf(Pending_Orders_List.size()));
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Intent i = new Intent(getApplicationContext(), Business_order_details_fromBarcode.class);
+
+                                    i.putExtra("barcodevalue", barcodevalue);
+                                    Gson GS = new Gson();
+                                    String BS = GS.toJson(Pending_Orders_List.get(0).getBusiness_Shipment());
+                                    String pol = GS.toJson(Pending_Orders_List);
+                                    i.putExtra("Business_Shipment", BS);
+                                    i.putExtra("Business_username", Pending_Orders_List.get(0).getBusiness_Order().getB_username());
+                                    i.putExtra("PendingOrderList", pol);
+                                    startActivity(i);
+                                    finish();
+                                }
+
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    if (mprogress.isShowing()) {
+                                        mprogress.dismiss();
+                                    }
+                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                    Log.v("failure", json.toString());
+                                    Log.i("qwertyuiopajklzxcvbnm,", error.toString());
+
+                                }
+                            }
+
+                    );
+                } else {
+                    if (mprogress.isShowing()) {
+                        mprogress.dismiss();
+                    }
+                    Toast.makeText(Business_orders_sublist.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        } else {
+            Log.d("MainActivity", "Weird");
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+}
+

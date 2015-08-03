@@ -3,58 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <TextView
-        android:id="@+id/destinationaddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
+        android:text="Shipments details"
+        android:layout_width="match_parent"
         android:gravity="center"
-        android:text="A-3 35 Grren Fields JVLR andheri EAST mumbai 400093"
-        android:textSize="20sp" />
-
-    <RadioGroup
-        android:id="@+id/modeofshipment"
-        android:layout_width="wrap_content"
+        android:textSize="30sp"
+        android:textColor="@color/blue"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/destinationaddress"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="15dp"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/radio_premium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Premium" />
-
-        <RadioButton
-            android:id="@+id/radio_regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Standard" />
-
-        <RadioButton
-            android:id="@+id/radio_express"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bulk" />
-
-    </RadioGroup>
+        android:id="@+id/tv"/>
+<TextView
+    android:layout_below="@+id/tv"
+    android:text="Total number of shipments = 1"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:textSize="20sp"
+    android:layout_height="wrap_content"
+    android:id="@+id/TotalOrders"/>
+    <TextView
+        android:layout_below="@+id/TotalOrders"
+        android:text="Shipment number 1"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:layout_height="wrap_content"
+        android:id="@+id/CurrentShipment"/>
 
     <TextView
+        android:layout_below="@+id/CurrentShipment"
         android:id="@+id/nametext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/modeofshipment"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="Item Name:"
         android:textSize="20sp" />
 
     <EditText
+        android:enabled="false"
         android:id="@+id/etItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,76 +48,79 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/nametext"
-        android:hint="Enter Item Name" />
+        android:hint="N/A" />
+
     <TextView
-        android:id="@+id/pricetext"
+        android:id="@+id/valuetext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/nametext"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:text="Price of item:"
+        android:text="SKU:"
         android:textSize="20sp" />
 
     <EditText
-        android:id="@+id/etItemPrice"
+        android:enabled="false"
+        android:id="@+id/etItemValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pricetext"
+        android:layout_alignBaseline="@+id/valuetext"
         android:layout_below="@+id/nametext"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/pricetext"
-        android:hint="Enter Item Name" />
-
+        android:layout_toRightOf="@+id/valuetext"
+        android:hint="N/A" />
 
     <TextView
         android:id="@+id/weighttext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/pricetext"
+        android:layout_below="@+id/valuetext"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="Weight"
         android:textSize="20sp" />
 
     <EditText
+        android:enabled="false"
         android:id="@+id/etItemweight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/weighttext"
-        android:layout_below="@+id/pricetext"
+        android:layout_below="@+id/valuetext"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/weighttext"
-        android:hint="Enter Item Weight" />
+        android:hint="N/A" />
 
     <TextView
-        android:id="@+id/valuetext"
+        android:id="@+id/pricetext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/weighttext"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:text="Price Charged:"
+        android:text="Price"
         android:textSize="20sp" />
 
     <EditText
-        android:id="@+id/etItemValue"
+        android:enabled="false"
+        android:id="@+id/etItemPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/valuetext"
+        android:layout_alignBaseline="@+id/pricetext"
         android:layout_below="@+id/weighttext"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/valuetext"
-        android:hint="Enter Item Value" />
+        android:layout_toRightOf="@+id/pricetext"
+        android:hint="N/A" />
 
     <Button
         android:id="@+id/QrCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/valuetext"
+        android:layout_below="@+id/pricetext"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@color/blue"
