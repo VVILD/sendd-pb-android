@@ -6,6 +6,7 @@ package co.sendddelivery.GetterandSetter;
 public class BusinessPatch {
 
     private String status;
+    private String barcode;
 
     public String getBarcode() {
         return barcode;
@@ -23,5 +24,4 @@ public class BusinessPatch {
         this.status = status;
     }
 
-    private String barcode;
 }

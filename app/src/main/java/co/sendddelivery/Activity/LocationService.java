@@ -1,6 +1,5 @@
 package co.sendddelivery.Activity;
 
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,15 +9,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.google.android.gms.location.LocationRequest;
-
 import co.sendddelivery.GetterandSetter.LocationParameters;
-import co.sendddelivery.GetterandSetter.Login;
-import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
-import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -26,18 +18,15 @@ import retrofit.client.Response;
 /**
  * Created by harshkaranpuria on 8/3/15.
  */
+
 public class LocationService extends Service {
     public static final String BROADCAST_ACTION = "Hello World";
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     public LocationManager locationManager;
     public MyLocationListener listener;
     public Location previousBestLocation = null;
-
-    Utils mUtils;
-    ProgressDialog mprogress;
     NetworkUtils mnetworkutils;
     Intent intent;
-    int counter = 0;
 
     @Override
     public void onCreate() {
@@ -49,12 +38,8 @@ public class LocationService extends Service {
     public void onStart(Intent intent, int startId) {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 500, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 500, listener);
-    }
-
-    protected void createLocationRequest() {
-
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,300000 , 500, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 500, listener);
     }
 
     @Override
@@ -104,10 +89,6 @@ public class LocationService extends Service {
         return false;
     }
 
-
-    /**
-     * Checks whether two providers are the same
-     */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
@@ -143,7 +124,8 @@ public class LocationService extends Service {
     public class MyLocationListener implements LocationListener {
 
         public void onLocationChanged(final Location loc) {
-            Log.i("**************************************", "Location changed");
+
+            Log.i("******************", "Location changed");
             if (isBetterLocation(loc, previousBestLocation)) {
 
                 loc.getLatitude();
@@ -160,13 +142,11 @@ public class LocationService extends Service {
                                 Log.i("Pushed", "Pushed");
 
                             }
-
                             @Override
                             public void failure(RetrofitError error) {
                                 Log.i("Error:->", error.toString());
                             }
                         }
-
                 );
                 intent.putExtra("Latitude", loc.getLatitude());
                 intent.putExtra("Longitude", loc.getLongitude());
@@ -177,12 +157,12 @@ public class LocationService extends Service {
         }
 
         public void onProviderDisabled(String provider) {
-            Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
         }
 
 
         public void onProviderEnabled(String provider) {
-            Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
         }
 
 

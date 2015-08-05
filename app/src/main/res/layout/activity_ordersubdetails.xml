@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/nametext"
-        android:layout_width="wrap_content"
+        android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/modeofshipment"
         android:layout_marginLeft="10dp"
@@ -64,9 +64,10 @@
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/nametext"
         android:hint="Enter Item Name" />
+
     <TextView
         android:id="@+id/pricetext"
-        android:layout_width="wrap_content"
+        android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/nametext"
         android:layout_marginLeft="10dp"
@@ -88,7 +89,7 @@
 
     <TextView
         android:id="@+id/weighttext"
-        android:layout_width="wrap_content"
+        android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/pricetext"
         android:layout_marginLeft="10dp"
@@ -109,7 +110,7 @@
 
     <TextView
         android:id="@+id/valuetext"
-        android:layout_width="wrap_content"
+        android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/weighttext"
         android:layout_marginLeft="10dp"
@@ -129,16 +130,47 @@
         android:hint="Enter Item Value" />
 
     <Button
-        android:id="@+id/QrCode"
+        android:id="@+id/calculatePrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/valuetext"
+        android:layout_margin="10dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/etItemValue"
+        android:layout_weight="50"
         android:background="@color/blue"
         android:padding="5dp"
-        android:text="Scan QR Code"
+        android:text="Calculate Price"
         android:textColor="@color/white" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/calculatePrice"
+        android:layout_marginTop="20dp"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/enterQRCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="50"
+            android:background="@color/blue"
+            android:padding="5dp"
+            android:text="Enter QR Code"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/QrCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="50"
+            android:background="@color/blue"
+            android:padding="5dp"
+            android:text="Scan QR Code"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"

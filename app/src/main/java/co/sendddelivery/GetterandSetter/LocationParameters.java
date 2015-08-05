@@ -6,6 +6,7 @@ package co.sendddelivery.GetterandSetter;
 public class LocationParameters {
     private String pbuser;
     private Double lon;
+    private Double lat;
 
     public String getPbuser() {
         return pbuser;
@@ -31,5 +32,4 @@ public class LocationParameters {
         this.lat = lat;
     }
 
-    private Double lat;
 }

@@ -17,6 +17,8 @@ public class CustomerPatch {
     private String pincode;
     private String state;
     private int drop_address_pk;
+    private String cost_of_courier;
+
 
     public String getCity() {
         return city;
@@ -130,5 +132,4 @@ public class CustomerPatch {
         this.cost_of_courier = cost_of_courier;
     }
 
-    private String cost_of_courier;
 }

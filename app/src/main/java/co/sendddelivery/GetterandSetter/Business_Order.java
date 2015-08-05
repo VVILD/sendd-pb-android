@@ -14,13 +14,14 @@ public class Business_Order implements Serializable {
     private String b_contact_mob;
     private String b_contact_office;
     private String b_name;
-    private String pickup_time;
-    private String order_id;
-
-
-
-    private String pickup_time_range;
+    private String b_pincode;
+    private String b_state;
     private String b_username;
+    private String name;
+    private String order_id;
+    private String phone;
+    private String pickup_time;
+    private String pincode;
     private Boolean isComplete;
 
     public String getOrder_id() {
@@ -47,13 +48,6 @@ public class Business_Order implements Serializable {
         this.b_username = b_username;
     }
 
-    public String getPickup_time_range() {
-        return pickup_time_range;
-    }
-
-    public void setPickup_time_range(String pickup_time_range) {
-        this.pickup_time_range = pickup_time_range;
-    }
 
     public String getPickup_time() {
         return pickup_time;
@@ -62,12 +56,6 @@ public class Business_Order implements Serializable {
     public void setPickup_time(String pickup_time) {
         this.pickup_time = pickup_time;
     }
-
-    private String b_pincode;
-    private String name;
-    private String phone;
-    private String pincode;
-    private String b_state;
 
     public String getAddress1() {
         return address1;

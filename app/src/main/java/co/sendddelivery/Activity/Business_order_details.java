@@ -1,8 +1,11 @@
 package co.sendddelivery.Activity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,12 +18,20 @@ import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import co.sendddelivery.GetterandSetter.BusinessAllOrders;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
+import co.sendddelivery.GetterandSetter.Business_Order;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
 import co.sendddelivery.GetterandSetter.ShipmentsListItems;
@@ -35,7 +46,7 @@ import retrofit.mime.TypedByteArray;
 public class Business_order_details extends Activity {
     List<Business_Shipment> mBusiness_Shipment;
     Boolean x = true;
-    Button QrScan;
+    Button QrScan,EnterQrcode;
     int counter = 0,shipmentnumber =1;
     NetworkUtils mnetworkutils;
     Utils mUtils;
@@ -44,7 +55,7 @@ public class Business_order_details extends Activity {
     ArrayList<Pending_Orders> mPending_Order_list;
     TextView totalshipment,currentshipment;
 
-
+    String BarcodeValue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,12 +72,40 @@ public class Business_order_details extends Activity {
         final EditText etItemPrice = (EditText) findViewById(R.id.etItemPrice);
         totalshipment.setText("Total number of shipments = "+ mBusiness_Shipment.size() );
         QrScan = (Button) findViewById(R.id.QrCode);
+        EnterQrcode = (Button)findViewById(R.id.enterQRCode);
         Button Cancel = (Button) findViewById(R.id.Cancel);
         Button Submit = (Button) findViewById(R.id.Submit);
         QrScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new IntentIntegrator(Business_order_details.this).initiateScan();
+            }
+        });
+        EnterQrcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog = new Dialog(Business_order_details.this);
+                dialog.setTitle("Enter QR Code");
+                dialog.setContentView(R.layout.dialog_barcode);
+                dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.WHITE)));
+                dialog.show();
+                final EditText etBarcodeValue = (EditText) dialog.findViewById(R.id.etBarcodeEntry);
+                Button getDetails = (Button) dialog.findViewById(R.id.bGetDetails);
+                getDetails.setText("Set Value");
+
+                getDetails.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final String barcodevalue1 = etBarcodeValue.getText().toString();
+
+                        dialog.dismiss();
+                        Log.i("barcodevalue1", barcodevalue1);
+                        EnterQrcode.setText(barcodevalue1);
+                        BarcodeValue=barcodevalue1;
+
+                    }
+                });
+
             }
         });
         Cancel.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +194,7 @@ public class Business_order_details extends Activity {
             public void onClick(View view) {
                 BusinessPatch Bp = new BusinessPatch();
                 Bp.setStatus("PU");
-                Bp.setBarcode(QrScan.getText().toString());
+                Bp.setBarcode(BarcodeValue);
                 mnetworkutils = new NetworkUtils(Business_order_details.this);
                 mprogress = new ProgressDialog(Business_order_details.this);
                 mprogress.setMessage("Please wait...");
@@ -272,6 +311,8 @@ public class Business_order_details extends Activity {
             } else {
                 Log.d("MainActivity", "Scanned");
                 QrScan.setText(result.getContents());
+                BarcodeValue=result.getContents();
+
             }
         } else {
             Log.d("MainActivity", "Weird");

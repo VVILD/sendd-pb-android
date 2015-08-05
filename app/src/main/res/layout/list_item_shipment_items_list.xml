@@ -19,7 +19,7 @@ android:padding="10dp">
     <ImageView
         android:text="10:00 AM"
         android:textSize="20sp"
-        android:src="@drawable/sample"
+        android:src="@drawable/box_sample_icon"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_width="100dp"

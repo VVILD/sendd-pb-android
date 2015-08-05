@@ -11,7 +11,12 @@ public class Customer_shipment implements Serializable {
     private String cost_of_courier;
     private Drop_address drop_address;
     private String drop_name;
+    private String drop_phone;
+    private String img;
+    private String item_name;
+    private String price;
     private String real_tracking_no;
+    private String weight;
 
     public String getReal_tracking_no() {
         return real_tracking_no;
@@ -20,12 +25,6 @@ public class Customer_shipment implements Serializable {
     public void setReal_tracking_no(String real_tracking_no) {
         this.real_tracking_no = real_tracking_no;
     }
-
-    private String drop_phone;
-    private String img;
-    private String item_name;
-    private String price;
-    private String weight;
 
     public String getCategory() {
         return category;

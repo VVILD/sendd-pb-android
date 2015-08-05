@@ -16,14 +16,37 @@
 
 
     <TextView
+        android:id="@+id/nameLabel_text"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/orderTitle"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:text="Full Name:"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
         android:id="@+id/nameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderTitle"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="15dp"
+        android:layout_toRightOf="@+id/nameLabel_text"
         android:text="Full Name: Harsh Karanpuria"
         android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/addressLabel_text"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="Address:"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/addressLabel"
@@ -32,48 +55,103 @@
         android:layout_below="@+id/nameLabel"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/addressLabel_text"
         android:text="Address: A-3 35 green fields JVLR andheri east Mumbai 400093"
-        android:textSize="18sp"
+        android:textSize="18sp"  />
+
+    <TextView
+        android:id="@+id/phoneLabel_text"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addressLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="Ph Number:"
+
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
+        android:layout_toRightOf="@+id/phoneLabel_text"
         android:id="@+id/phoneLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/addressLabel"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
-        android:text="Phone Number: 9920899602 "
+        android:text="9920899602 "
         android:textSize="18sp" />
 
-
     <TextView
+        android:id="@+id/pickuptimeLable_text"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phoneLabel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="Time:"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_toRightOf="@+id/pickuptimeLable_text"
         android:id="@+id/pickuptimeLable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/phoneLabel"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
-        android:text="PickUp Time: 1:30 PM "
+        android:text="1:30 PM "
         android:textSize="18sp" />
-
-    <ListView
+    <TextView
+        android:id="@+id/TVone"
+        android:text="--------All Orders--------"
+        android:textSize="20sp"
+        android:gravity="center"
         android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:textColor="@color/blue"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/pickuptimeLable_text"
+        android:layout_height="wrap_content" />
+    <ListView
         android:id="@+id/businesssubordersListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/pickuptimeLable"
+        android:layout_above="@+id/ll"
+        android:layout_below="@+id/TVone"
         android:layout_marginBottom="10dp"
-        android:layout_above="@+id/bScan_order"
+        android:layout_marginTop="10dp"
         android:background="@android:color/white" />
-    <Button
-        android:text="Scan QR Code"
-        android:id="@+id/bScan_order"
-        android:textColor="@color/white"
-        android:layout_alignParentBottom="true"
-        android:background="@color/blue"
+
+    <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        />
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/bScan_order"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="50"
+            android:background="@color/blue"
+            android:text="Scan QR Code"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/bEnter_Code"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="50"
+            android:background="@color/blue"
+            android:text="Enter COde"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
 </RelativeLayout>

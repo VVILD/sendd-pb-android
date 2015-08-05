@@ -64,7 +64,6 @@ public class NetworkUtils {
                 .setConverter(new GsonConverter(gson))
                 .setClient(new ApacheClient())
                 .build();
-
         NetworkCalls mnetworkcall = madapter.create(NetworkCalls.class);
         return mnetworkcall;
     }

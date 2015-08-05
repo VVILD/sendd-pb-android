@@ -16,6 +16,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,18 +37,28 @@ public class Customer_OrderDetails extends Activity {
     ArrayList<ShipmentsListItems> mCustomer_shipment_list;
     private Shipments_Adapter madapter;
     Button bProcess;
+    ImageLoaderConfiguration config;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orderdetails);
-        bProcess =(Button)findViewById(R.id.bProcess);
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
+        config = new ImageLoaderConfiguration.Builder(this).defaultDisplayImageOptions(defaultOptions).build();
+
+        ImageLoader.getInstance().init(config);
+        bProcess = (Button) findViewById(R.id.bProcess);
         bProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), CustomerOrderSubDetails.class);
                 Gson GS = new Gson();
                 String CSList = GS.toJson(mCustomer_shipment_list);
-                i.putExtra("Customer_shipment_object",getIntent().getStringExtra("Customer_shipment_object"));
+                i.putExtra("Customer_shipment_object", getIntent().getStringExtra("Customer_shipment_object"));
                 startActivity(i);
             }
         });
@@ -60,20 +73,14 @@ public class Customer_OrderDetails extends Activity {
         Customer_Order customer_order = GS.fromJson(Customer_order_object, Customer_Order.class);
         mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
         Log.i("List<Customer_shipment>", String.valueOf(mCustomer_Shipment.size()));
-        nameLabel.setText("NAME =>  " + customer_order.getName());
-        addressLabel.setText("Address =>  "+ customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode());
-        phoneLabel.setText("Phone Number =>  "+customer_order.getUser());
-        pickuptimeLable.setText("PickUp Time =>  "+customer_order.getPickup_time());
+        nameLabel.setText( customer_order.getName());
+        addressLabel.setText(  customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode());
+        phoneLabel.setText(   customer_order.getUser());
+        pickuptimeLable.setText(  customer_order.getPickup_time());
         ListView lv_Saved_Address = (ListView) findViewById(R.id.shipmentList);
         madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ShowAddressToList());
         lv_Saved_Address.setAdapter(madapter);
 
-        lv_Saved_Address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-
-            }
-        });
 
     }
 
@@ -141,8 +148,16 @@ public class Customer_OrderDetails extends Activity {
                 shipment_holder = (Shipments_holder) convertView.getTag();
             }
             //setup list objects
-            shipment_holder.Shipment_number.setText(address_list.get(position).getShipment_number());
 
+            shipment_holder.Shipment_number.setText(address_list.get(position).getShipment_number());
+            Log.i("mCustomer_Shipment.get(i).getReal_tracking_no()", address_list.get(position).getShipment_number());
+
+            if (address_list.get(position).getImageUrl() ==  null) {
+                ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
+            } else {
+                ImageLoader.getInstance().displayImage(address_list.get(position).getImageUrl(), shipment_holder.Shpiment_image);
+
+            }
             return convertView;
         }
     }
@@ -150,12 +165,14 @@ public class Customer_OrderDetails extends Activity {
     public ArrayList<ShipmentsListItems> ShowAddressToList() {
 
         mCustomer_shipment_list = new ArrayList<>();
-        ShipmentsListItems sli = new ShipmentsListItems();
         for (int i = 0; i < mCustomer_Shipment.size(); i++) {
+            ShipmentsListItems sli = new ShipmentsListItems();
             sli.setShipment_number(mCustomer_Shipment.get(i).getReal_tracking_no());
             sli.setImageUrl(mCustomer_Shipment.get(i).getImg());
+
             mCustomer_shipment_list.add(sli);
         }
+
         return mCustomer_shipment_list;
     }
 }
