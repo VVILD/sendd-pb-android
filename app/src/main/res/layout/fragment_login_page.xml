@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlbuttonLogin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/LoginPhoneNumber"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:hint="Phone Number"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/LoginPhoneNumber"
+        android:background="@color/blue"
+        android:text="Login"
+        android:textColor="@color/white" />
+</RelativeLayout>
+

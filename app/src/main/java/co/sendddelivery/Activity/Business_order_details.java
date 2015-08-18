@@ -18,20 +18,12 @@ import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import co.sendddelivery.GetterandSetter.BusinessAllOrders;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
-import co.sendddelivery.GetterandSetter.Business_Order;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
 import co.sendddelivery.GetterandSetter.ShipmentsListItems;
@@ -54,7 +46,6 @@ public class Business_order_details extends Activity {
     List<BusinessAllOrders> BAllOrder;
     ArrayList<Pending_Orders> mPending_Order_list;
     TextView totalshipment,currentshipment;
-
     String BarcodeValue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +83,10 @@ public class Business_order_details extends Activity {
                 final EditText etBarcodeValue = (EditText) dialog.findViewById(R.id.etBarcodeEntry);
                 Button getDetails = (Button) dialog.findViewById(R.id.bGetDetails);
                 getDetails.setText("Set Value");
-
                 getDetails.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         final String barcodevalue1 = etBarcodeValue.getText().toString();
-
                         dialog.dismiss();
                         Log.i("barcodevalue1", barcodevalue1);
                         EnterQrcode.setText(barcodevalue1);
@@ -111,7 +100,6 @@ public class Business_order_details extends Activity {
         Cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 BusinessPatch Bp = new BusinessPatch();
                 Bp.setStatus("CA");
                 mnetworkutils = new NetworkUtils(Business_order_details.this);
@@ -130,9 +118,9 @@ public class Business_order_details extends Activity {
                                     counter++;
                                     shipmentnumber++;
 
-                                    currentshipment.setText("Shipment number "+ shipmentnumber );
-                                    if (counter < mBusiness_Shipment.size()) {
 
+                                    if (counter < mBusiness_Shipment.size()) {
+                                        currentshipment.setText("Shipment number "+ shipmentnumber );
                                         if (!mBusiness_Shipment.get(counter).getName().equals("null")) {
                                             etItemName.setText(mBusiness_Shipment.get(counter).getName());
                                         } else {
@@ -192,84 +180,93 @@ public class Business_order_details extends Activity {
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BusinessPatch Bp = new BusinessPatch();
-                Bp.setStatus("PU");
-                Bp.setBarcode(BarcodeValue);
-                mnetworkutils = new NetworkUtils(Business_order_details.this);
-                mprogress = new ProgressDialog(Business_order_details.this);
-                mprogress.setMessage("Please wait...");
-                mprogress.setCancelable(false);
-                mprogress.setIndeterminate(true);
-                if (mnetworkutils.isnetconnected()) {
-                    mprogress.show();
-                    mnetworkutils.getapi().updateBusiness(mBusiness_Shipment.get(counter).getReal_tracking_no(), Bp, new Callback<BusinessPatch>() {
-                                @Override
-                                public void success(BusinessPatch response, Response response1) {
-                                    if (mprogress.isShowing()) {
-                                        mprogress.dismiss();
+                if(BarcodeValue != null){
+                if (BarcodeValue.length() >= 10 && BarcodeValue.length() <= 12) {
+                    BusinessPatch Bp = new BusinessPatch();
+                    Bp.setStatus("PU");
+                    Bp.setBarcode(BarcodeValue);
+                    mnetworkutils = new NetworkUtils(Business_order_details.this);
+                    mprogress = new ProgressDialog(Business_order_details.this);
+                    mprogress.setMessage("Please wait...");
+                    mprogress.setCancelable(false);
+                    mprogress.setIndeterminate(true);
+                    if (mnetworkutils.isnetconnected()) {
+                        mprogress.show();
+                        mnetworkutils.getapi().updateBusiness(mBusiness_Shipment.get(counter).getReal_tracking_no(), Bp, new Callback<BusinessPatch>() {
+                                    @Override
+                                    public void success(BusinessPatch response, Response response1) {
+                                        if (mprogress.isShowing()) {
+                                            mprogress.dismiss();
+                                        }
+                                        Log.i("response1", String.valueOf(response1.getStatus()));
+                                        counter++;
+                                        shipmentnumber++;
+
+                                        if (counter < mBusiness_Shipment.size()) {
+                                            currentshipment.setText("Shipment number " + shipmentnumber);
+                                            if (!mBusiness_Shipment.get(counter).getName().equals("null")) {
+                                                etItemName.setText(mBusiness_Shipment.get(counter).getName());
+                                            } else {
+                                                etItemName.setText("");
+                                            }
+                                            if (!mBusiness_Shipment.get(counter).getPrice().equals("null")) {
+                                                etItemPrice.setText(mBusiness_Shipment.get(counter).getPrice());
+
+                                            } else {
+                                                etItemPrice.setText("");
+                                            }
+                                            if (!mBusiness_Shipment.get(counter).getWeight().equals("null")) {
+                                                etItemweight.setText(mBusiness_Shipment.get(counter).getWeight());
+
+                                            } else {
+                                                etItemweight.setText("");
+                                            }
+                                            if (!mBusiness_Shipment.get(counter).getSku().equals("null")) {
+                                                etItemValue.setText(mBusiness_Shipment.get(counter).getSku());
+
+                                            } else {
+                                                etItemValue.setText("");
+                                            }
+                                            QrScan.setText("Scan Qr Code");
+                                        } else {
+
+                                            counter = 0;
+                                            Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
+                                            String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
+                                            String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
+                                            mPending_Order_list = new ArrayList<>(Arrays.asList(GS.fromJson(ForwardIntent_POL, Pending_Orders[].class)));
+                                            mPending_Order_list.remove(getIntent().getIntExtra("pendingOrderId", 0));
+                                            Log.i("asdfafs", String.valueOf(mPending_Order_list.size()));
+                                            String pendingorderupdated = GS.toJson(mPending_Order_list);
+                                            i.putExtra("Business_username", ForwardIntent_UserName);
+                                            i.putExtra("PendingOrderList", pendingorderupdated);
+                                            i.putExtra("OrderName", getIntent().getStringExtra("OrderName"));
+                                            startActivity(i);
+                                            finish();
+                                            Business_order_details.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
+                                        }
+
                                     }
-                                    Log.i("response1", String.valueOf(response1.getStatus()));
-                                    counter++;
-                                    shipmentnumber++;
 
-                                    currentshipment.setText("Shipment number "+ shipmentnumber );
-                                    if (counter < mBusiness_Shipment.size()) {
-                                        if (!mBusiness_Shipment.get(counter).getName().equals("null")) {
-                                            etItemName.setText(mBusiness_Shipment.get(counter).getName());
-                                        } else {
-                                            etItemName.setText("");
+                                    @Override
+                                    public void failure(RetrofitError error) {
+                                        if (mprogress.isShowing()) {
+                                            mprogress.dismiss();
                                         }
-                                        if (!mBusiness_Shipment.get(counter).getPrice().equals("null")) {
-                                            etItemPrice.setText(mBusiness_Shipment.get(counter).getPrice());
-
-                                        } else {
-                                            etItemPrice.setText("");
-                                        }
-                                        if (!mBusiness_Shipment.get(counter).getWeight().equals("null")) {
-                                            etItemweight.setText(mBusiness_Shipment.get(counter).getWeight());
-
-                                        } else {
-                                            etItemweight.setText("");
-                                        }
-                                        if (!mBusiness_Shipment.get(counter).getSku().equals("null")) {
-                                            etItemValue.setText(mBusiness_Shipment.get(counter).getSku());
-
-                                        } else {
-                                            etItemValue.setText("");
-                                        }
-                                        QrScan.setText("Scan Qr Code");
-                                    } else {
-
-                                        counter = 0;
-                                        Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
-                                        String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
-                                        String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
-                                        mPending_Order_list = new ArrayList<>(Arrays.asList(GS.fromJson(ForwardIntent_POL, Pending_Orders[].class)));
-                                        mPending_Order_list.remove(getIntent().getIntExtra("pendingOrderId", 0));
-                                        Log.i("asdfafs", String.valueOf(mPending_Order_list.size()));
-                                        String pendingorderupdated = GS.toJson(mPending_Order_list);
-                                        i.putExtra("Business_username", ForwardIntent_UserName);
-                                        i.putExtra("PendingOrderList", pendingorderupdated);
-                                        i.putExtra("OrderName", getIntent().getStringExtra("OrderName"));
-                                        startActivity(i);
-                                        finish();
+                                        String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                        Log.v("failure", json.toString());
                                     }
-
                                 }
 
-                                @Override
-                                public void failure(RetrofitError error) {
-                                    if (mprogress.isShowing()) {
-                                        mprogress.dismiss();
-                                    }
-                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                    Log.v("failure", json.toString());
-                                }
-                            }
-
-                    );
-                } else {
-                    Toast.makeText(Business_order_details.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                        );
+                    } else {
+                        Toast.makeText(Business_order_details.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                    }
+                }else{
+                    Toast.makeText(Business_order_details.this, "Please Choose a correct barcode value", Toast.LENGTH_LONG).show();
+                }}else{
+                    Toast.makeText(Business_order_details.this, "Please Choose a correct barcode value", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -318,5 +315,11 @@ public class Business_order_details extends Activity {
             Log.d("MainActivity", "Weird");
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Business_order_details.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 }

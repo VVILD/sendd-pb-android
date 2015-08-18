@@ -5,23 +5,29 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv1"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Today's Orders" />
+    <include
+        android:id="@+id/thankyou_activity"
+        layout="@layout/toolbar_sendd"></include>
 
-    <ListView
-        android:id="@+id/allordersListView"
+
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/ll"
-        android:layout_below="@+id/tv1"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/white" />
+        android:layout_below="@+id/thankyou_activity"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/allordersListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/ll"
+            android:layout_marginBottom="10dp"
+            android:background="@android:color/white"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
+
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <LinearLayout

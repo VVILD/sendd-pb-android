@@ -1,131 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/orderTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="Order number - I"
-        android:textSize="18dp" />
+    <include
+        android:id="@+id/thankyou_activity"
+        layout="@layout/toolbar_customerdetail" />
 
+    <RelativeLayout
+        android:id="@+id/rlorderDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/thankyou_activity"
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:descendantFocusability="blocksDescendants">
 
-    <TextView
-        android:id="@+id/nameLabel_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/orderTitle"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Full Name:"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@color/white"
+            android:descendantFocusability="blocksDescendants">
 
-    <TextView
-        android:layout_toRightOf="@+id/nameLabel_text"
-        android:id="@+id/nameLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/orderTitle"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Harsh Karanpuria"
-        android:textSize="18sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="100">
 
-    <TextView
-        android:id="@+id/addressLabel_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="Address:"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="55">
 
-    <TextView
-        android:layout_toRightOf="@+id/addressLabel_text"
-        android:id="@+id/addressLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="A-3 35 green fields JVLR andheri east Mumbai 400093"
-        android:textSize="18sp"  />
-    <TextView
-        android:id="@+id/phoneLabel_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/addressLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="Ph Number:"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-    <TextView
-        android:layout_toRightOf="@+id/phoneLabel_text"
-        android:id="@+id/phoneLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/addressLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="9920899602 "
-        android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/nameLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_above="@+id/phoneLabel"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginRight="10dp"
+                        android:background="@color/blue"
+                        android:gravity="center"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:paddingTop="10dp"
+                        android:text="10:00 AM"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
 
+                    <TextView
+                        android:id="@+id/phoneLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignRight="@+id/nameLabel"
+                        android:background="#2c3e50"
+                        android:gravity="center"
+                        android:text="9920899602"
+                        android:textColor="@color/white"
+                        android:textSize="22sp" />
+                </RelativeLayout>
 
-    <TextView
-        android:id="@+id/pickuptimeLable_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/phoneLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="Time:"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-    <TextView
-        android:layout_toRightOf="@+id/pickuptimeLable_text"
-        android:id="@+id/pickuptimeLable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/phoneLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="1:30 PM "
-        android:textSize="18sp" />
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="45"
+                    android:gravity="top">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="top">
+
+                        <TextView
+                            android:id="@+id/addressLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingRight="15dp"
+                            android:paddingTop="5dp"
+                            android:text="Art and Language Lab"
+                            android:textColor="#2c3e50"
+                            android:textSize="22sp" />
+                    </RelativeLayout>
+                </ScrollView>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/TVone"
-        android:text="--------All Shpiments--------"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:textStyle="bold"
-        android:textColor="@color/blue"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/pickuptimeLable"
-
-        android:layout_height="wrap_content" />
-    <ListView
-        android:clickable="false"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/TVone"
-        android:id="@+id/shipmentList"
-        android:layout_width="match_parent"
-        android:layout_above="@+id/LLone"
-        android:layout_height="wrap_content">
-    </ListView>
-    <LinearLayout
-        android:id="@+id/LLone"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/rlorderDetails"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="--------All Shpiments--------"
+        android:textColor="@color/blue"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/shipmentList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/LLone"
+        android:layout_below="@+id/TVone"
+        android:layout_marginTop="10dp"
+        android:clickable="false"></ListView>
+
+    <LinearLayout
+
+        android:id="@+id/LLone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="20dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:weightSum="100">
 
 

@@ -135,6 +135,8 @@ public class Business_order_details_fromBarcode extends Activity {
                                     i.putExtra("PendingOrderList", ForwardIntent_POL);
                                     startActivity(i);
                                     finish();
+                                    Business_order_details_fromBarcode.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
 
                                 }
 
@@ -181,5 +183,11 @@ public class Business_order_details_fromBarcode extends Activity {
             etItemValue.setText("");
         }
 
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Business_order_details_fromBarcode.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 }

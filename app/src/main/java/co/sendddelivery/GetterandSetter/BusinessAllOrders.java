@@ -6,7 +6,6 @@ public class BusinessAllOrders {
 
     private String Order_name;
     private Business_Order BO;
-    private Business_Order BO1;
     private ArrayList<Business_Shipment>BS;
     private String BusinessUserName;
     private Boolean isComplete;

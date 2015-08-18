@@ -1,5 +1,6 @@
 package co.sendddelivery.Activity;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +39,8 @@ public class LocationService extends Service {
     public void onStart(Intent intent, int startId) {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,300000 , 500, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300000, 500, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60*5 , 500, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*60*5, 500, listener);
     }
 
     @Override
@@ -157,12 +158,12 @@ public class LocationService extends Service {
         }
 
         public void onProviderDisabled(String provider) {
-//            Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
+
         }
 
 
         public void onProviderEnabled(String provider) {
-//            Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
+
         }
 
 
@@ -171,4 +172,5 @@ public class LocationService extends Service {
         }
 
     }
+
 }

@@ -9,9 +9,6 @@ import android.os.Message;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.Utils;
 
-/**
- * Created by harshkaranpuria on 7/30/15.
- */
 public class Activity_SplashScreen extends Activity{
     private Handler handler;
     @Override

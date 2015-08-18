@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<RelativeLayout
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include
+        android:id="@+id/thankyou_activity"
+        layout="@layout/toolbar_customerdetail" />
+
     <TextView
+        android:id="@+id/TotalOrders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/thankyou_activity"
+        android:gravity="center"
+        android:text="Total number of shipments = 1"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/CurrentShipment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TotalOrders"
+        android:gravity="center"
+        android:text="Shipment number 1"
+        android:textSize="20sp" />
+
+    <TextView
+        android:background="@drawable/border_edittext"
         android:id="@+id/destinationaddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/CurrentShipment"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
         android:gravity="center"
@@ -55,6 +84,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:singleLine="true"
         android:id="@+id/etItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,6 +96,7 @@
         android:hint="Enter Item Name" />
 
     <TextView
+        android:inputType="numberDecimal"
         android:id="@+id/pricetext"
         android:layout_width="135dp"
         android:layout_height="wrap_content"
@@ -76,6 +107,9 @@
         android:textSize="20sp" />
 
     <EditText
+        android:inputType="numberDecimal"
+
+        android:singleLine="true"
         android:id="@+id/etItemPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -98,6 +132,8 @@
         android:textSize="20sp" />
 
     <EditText
+        android:inputType="numberDecimal"
+        android:singleLine="true"
         android:id="@+id/etItemweight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -119,6 +155,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:singleLine="true"
         android:id="@+id/etItemValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -129,22 +166,11 @@
         android:layout_toRightOf="@+id/valuetext"
         android:hint="Enter Item Value" />
 
-    <Button
-        android:id="@+id/calculatePrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/etItemValue"
-        android:layout_weight="50"
-        android:background="@color/blue"
-        android:padding="5dp"
-        android:text="Calculate Price"
-        android:textColor="@color/white" />
     <LinearLayout
+        android:id="@+id/llthree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/calculatePrice"
+        android:layout_below="@+id/etItemValue"
         android:layout_marginTop="20dp"
         android:weightSum="100">
 
@@ -173,6 +199,7 @@
 
 
     <LinearLayout
+        android:layout_below="@+id/llthree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -204,3 +231,4 @@
             android:textColor="@color/white" />
     </LinearLayout>
 </RelativeLayout>
+    </ScrollView>

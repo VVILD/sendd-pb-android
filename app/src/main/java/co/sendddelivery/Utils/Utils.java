@@ -21,6 +21,7 @@ public class Utils extends Activity {
 
     }
 
+
     public static void hideSoftKeyboard(Activity activity) {
 
         InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);

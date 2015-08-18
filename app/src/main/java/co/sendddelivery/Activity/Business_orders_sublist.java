@@ -115,6 +115,8 @@ public class Business_orders_sublist extends Activity {
                 i.putExtra("PendingOrderList", ForwardIntent_POL);
                 startActivity(i);
                 finish();
+                Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
 
             }
         });
@@ -229,6 +231,8 @@ public class Business_orders_sublist extends Activity {
                                             i.putExtra("PendingOrderList", pol);
                                             startActivity(i);
                                             finish();
+                                            Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
                                             dialog.dismiss();
 
                                         }
@@ -335,6 +339,8 @@ public class Business_orders_sublist extends Activity {
     }
 
     public ArrayList<BusinessAllOrders> ShowAddressToList() {
+
+
         int counter = 1;
         int pendingorderId = 0;
         BusinessallOrders = new ArrayList<>();
@@ -445,8 +451,7 @@ public class Business_orders_sublist extends Activity {
                                             PO.setBusiness_Order(BO);
                                             PO.setBusiness_Shipment(Business_Shpiment_List);
                                             Pending_Orders_List.add(PO);
-                                            Log.i("String.valueOf(Pending_Orders_List.size())",String.valueOf(Pending_Orders_List.size()));
-                                        }
+                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -461,6 +466,7 @@ public class Business_orders_sublist extends Activity {
                                     i.putExtra("PendingOrderList", pol);
                                     startActivity(i);
                                     finish();
+                                    Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                                 }
 
 
@@ -469,6 +475,7 @@ public class Business_orders_sublist extends Activity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
+                                    Toast.makeText(Business_orders_sublist.this,"Barcode Already Exist",Toast.LENGTH_LONG).show();
                                     String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
                                     Log.v("failure", json.toString());
                                     Log.i("qwertyuiopajklzxcvbnm,", error.toString());
@@ -491,5 +498,11 @@ public class Business_orders_sublist extends Activity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
+    }
 }
 

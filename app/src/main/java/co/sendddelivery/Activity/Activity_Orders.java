@@ -1,10 +1,14 @@
 package co.sendddelivery.Activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +29,13 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import co.sendddelivery.GetterandSetter.AllOrders;
 import co.sendddelivery.GetterandSetter.Business_Order;
@@ -41,24 +50,37 @@ import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
-public class Activity_Orders extends Activity {
+public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRefreshListener  {
     private NetworkUtils mnetworkutils = new NetworkUtils(this);
-    private ProgressDialog mprogress;
     private PendingOrders_Adapter madapter;
     private ArrayList<AllOrders> allOrders;
     private ArrayList<Pending_Orders> Pending_Orders_List = new ArrayList<>();
     private Utils mUtils;
+    private ProgressDialog mprogress;
+    private Handler handler;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
-
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_allorders);
         mUtils = new Utils(this);
-        Intent intent = new Intent(this, LocationService.class);
-        startService(intent);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        if(!isMyServiceRunning(LocationService.class)){
+            Intent intent = new Intent(this, LocationService.class);
+            startService(intent);
+        }
         Button closeButton = (Button) findViewById(R.id.closeButton);
         Button refreshbutton = (Button) findViewById(R.id.refreshButton);
 
@@ -138,49 +160,66 @@ public class Activity_Orders extends Activity {
                 pendingorders_holder = new PendingOrders_holder();
                 LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.list_item_orders_list, parent, false);
-
                 pendingorders_holder.Order_Name = (TextView) convertView.findViewById(R.id.Order_Name);
                 pendingorders_holder.PickupTime = (TextView) convertView.findViewById(R.id.PickupTime);
+
                 convertView.setTag(pendingorders_holder);
             } else {
                 pendingorders_holder = (PendingOrders_holder) convertView.getTag();
             }
             //setup list objects
+            if (address_list.get(position).getIsBusiness()) {
+                pendingorders_holder.PickupTime.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+            } else {
+                pendingorders_holder.PickupTime.setBackgroundColor(getResources().getColor(R.color.yellow));
+
+            }
             pendingorders_holder.Order_Name.setText(address_list.get(position).getOrder_name());
             pendingorders_holder.PickupTime.setText(address_list.get(position).getPickupTime());
 
             return convertView;
         }
-        //Get all Saved Addresses in Address_Receiver DB.
-
-
     }
 
     public void onResume() {
         super.onResume();
-        Log.i("onResume","onResume");
-        updateOrders();
+        handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+               updateOrders();
+                return true;
+            }
+        });
+        Thread timer = new Thread() {
+            public void run() {
+                try {
+                    sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    Message msg = handler.obtainMessage();
+                    handler.sendMessage(msg);
+                }
+            }
+        };
+        timer.start();
     }
-
-    public ArrayList<AllOrders> ShowAddressToList() {
-
+    public ArrayList<AllOrders> ShowAddressToList() throws ParseException {
+        DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
         allOrders = new ArrayList<>();
         for (int i = 0; i < Pending_Orders_List.size(); i++) {
             AllOrders allorders = new AllOrders();
             Boolean flag = true;
-
             if (Pending_Orders_List.get(i).getIsBusiness()) {
                 for (int l = 0; l < allOrders.size(); l++) {
-                    if (allOrders.get(l).getOrder_name().equals(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name())) {
-                        flag = false;
-                    } else {
-                        flag = true;
-                    }
+                    flag = !allOrders.get(l).getOrder_name().equals(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
                 }
                 if (flag) {
                     allorders.setBusinessUserName(Pending_Orders_List.get(i).getBusiness_Order().getB_username());
                     allorders.setOrder_name(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
-                    allorders.setPickupTime(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
+                    Date date = format.parse(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
+                    String timeStamp = new SimpleDateFormat("HH:mm a", Locale.getDefault()).format(date);
+                    allorders.setPickupTime(timeStamp);
                     allorders.setIsBusiness(true);
                     allOrders.add(allorders);
                 }
@@ -188,7 +227,9 @@ public class Activity_Orders extends Activity {
                 allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
                 allorders.setCS(Pending_Orders_List.get(i).getCustomer_shipment());
                 allorders.setOrder_name(Pending_Orders_List.get(i).getCustomer_Order().getName());
-                allorders.setPickupTime(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());
+                Date date = format.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());
+                String timeStamp = new SimpleDateFormat("HH:mm a", Locale.getDefault()).format(date);
+                allorders.setPickupTime(timeStamp);
                 allorders.setIsBusiness(false);
                 allOrders.add(allorders);
             }
@@ -199,7 +240,7 @@ public class Activity_Orders extends Activity {
 
     public void updateOrders() {
         mprogress = new ProgressDialog(this);
-        mprogress.setMessage("Please wait.");
+        mprogress.setMessage("Please wait..");
         mprogress.setCancelable(false);
         mprogress.setIndeterminate(true);
         if (!mprogress.isShowing()) {
@@ -208,12 +249,11 @@ public class Activity_Orders extends Activity {
             Utils utils = new Utils(this);
             if (mnetworkutils.isnetconnected()) {
                 mprogress.show();
-                mnetworkutils.getapi().getOrders("9920899602", new Callback<Response>() {
+                mnetworkutils.getapi().getOrders(utils.getvalue("PhoneNumber"), new Callback<Response>() {
                             @Override
                             public void success(Response response, Response response2) {
-                                if (mprogress.isShowing()) {
-                                    mprogress.dismiss();
-                                }
+                                mprogress.dismiss();
+                                swipeRefreshLayout.setRefreshing(false);
 
                                 BufferedReader reader;
                                 StringBuilder sb = new StringBuilder();
@@ -323,24 +363,27 @@ public class Activity_Orders extends Activity {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                Log.i("Pending_Orders_size", String.valueOf(Pending_Orders_List.size()));
                                 ListView lv_Saved_Address = (ListView) findViewById(R.id.allordersListView);
-                                madapter = new PendingOrders_Adapter(Activity_Orders.this, R.layout.list_item_orders_list, ShowAddressToList());
+                                try {
+                                    madapter = new PendingOrders_Adapter(Activity_Orders.this, R.layout.list_item_orders_list, ShowAddressToList());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
                                 lv_Saved_Address.setAdapter(madapter);
 
                                 lv_Saved_Address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                                         if (allOrders.get(position).getIsBusiness()) {
-                                            Log.i("", allOrders.get(position).getOrder_name());
                                             Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
                                             Gson GS = new Gson();
                                             String PO = GS.toJson(Pending_Orders_List);
                                             i.putExtra("Business_username", allOrders.get(position).getBusinessUserName());
                                             i.putExtra("PendingOrderList", PO);
                                             startActivity(i);
+                                            Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
                                         } else {
-                                            Log.i("", allOrders.get(position).getOrder_name());
                                             Intent i = new Intent(getApplicationContext(), Customer_OrderDetails.class);
                                             Gson GS = new Gson();
                                             String CO = GS.toJson(allOrders.get(position).getCO());
@@ -348,31 +391,40 @@ public class Activity_Orders extends Activity {
                                             i.putExtra("Customer_order_object", CO);
                                             i.putExtra("Customer_shipment_object", CS);
                                             startActivity(i);
+                                            Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
                                         }
                                     }
                                 });
                             }
 
-
                             @Override
                             public void failure(RetrofitError error) {
-                                if (mprogress.isShowing()) {
-                                    mprogress.dismiss();
-                                }
-                                String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                Log.v("failure", json.toString());
-                                Log.i("qwertyuiopajklzxcvbnm,", error.toString());
-
+                                mprogress.dismiss();
+                                swipeRefreshLayout.setRefreshing(false);
                             }
                         }
-
                 );
             } else {
-                if (mprogress.isShowing()) {
-                    mprogress.dismiss();
-                }
                 Toast.makeText(this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, LocationService.class));
+    }
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.i("onBackPressed", "onBackPressed");
+        if (mprogress.isShowing()) {
+            mprogress.dismiss();
+        }
+    }
+    @Override
+    public void onRefresh() {
+        updateOrders();
     }
 }

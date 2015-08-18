@@ -1,152 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_parent"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical">
 
-    <ScrollView
-        android:id="@+id/rlmain"
+    <include
+        android:id="@+id/thankyou_activity"
+        layout="@layout/toolbar_customerdetail" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="35dp"
-        android:orientation="vertical"
-        android:padding="15dp">
+        android:layout_below="@+id/thankyou_activity"
+         android:orientation="vertical">
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:id="@+id/rlname"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/tvname"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Name:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            <RelativeLayout
-                android:id="@+id/rlFlatno"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-
-                <EditText
-                    android:id="@+id/etactivity_add_new_address_receiver_flatno"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:hint="Flat/House no."
-                    android:inputType="textCapWords"
-                    android:singleLine="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlLocality"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/rlFlatno"
-                android:layout_gravity="center"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etactivity_add_new_address_receiver_Locality"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
-                    android:hint="Locality"
-                    android:singleLine="false" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlCity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/rlLocality"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-
-                <EditText
-                    android:id="@+id/etactivity_add_new_address_receiver_City"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
-                    android:hint="City"
-
-                    android:inputType="textCapWords"
-                    android:singleLine="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlState"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/rlCity"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-
-                <EditText
-                    android:id="@+id/etactivity_add_new_address_receiver_State"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
-                    android:hint="State"
-                    android:inputType="textCapWords"
-                    android:singleLine="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlCountry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/rlState"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-
-                <EditText
-                    android:id="@+id/etactivity_add_new_address_receiver_Country"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
-                    android:hint="Country"
-                    android:inputType="textCapWords"
-                    android:singleLine="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlPincode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/rlCountry"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etactivity_add_new_address_receiver_Pincode"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:hint="PINCODE"
-                    android:imeOptions="actionDone"
-                    android:inputType="number"
-                    android:maxLength="6"
-                    android:singleLine="true" />
-            </RelativeLayout>
-            <Button
-                android:id="@+id/bactivity_add_new_address_receiver_SaveAddress"
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_name"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_centerHorizontal="true"
-                android:background="@color/blue"
-                android:text="Continue"
-                android:layout_below="@+id/rlPincode"
-                android:textColor="@color/white" />
+                android:layout_toRightOf="@+id/tvname"
+                android:hint="Name"
+                android:inputType="textCapWords"
+                android:singleLine="true" />
         </RelativeLayout>
-    </ScrollView>
-</RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/rlphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rlname"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvnumber"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Number:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_phone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@+id/tvnumber"
+                android:hint="Numebr"
+                android:inputType="phone"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlFlatno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rlphone"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvflat"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Flat/no.:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_flatno"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@+id/tvflat"
+                android:hint="Flat/House no."
+                android:inputType="textCapWords"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlLocality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlFlatno"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvLocality"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Locality:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_Locality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tvLocality"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
+                android:hint="Locality"
+                android:singleLine="false" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlLocality"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCity"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="City:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_City"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@+id/tvCity"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
+                android:hint="City"
+
+                android:inputType="textCapWords"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlCity"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvState"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="State:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_State"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@+id/tvState"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
+                android:hint="State"
+                android:inputType="textCapWords"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlCountry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlState"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCountry"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Country:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_Country"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@+id/tvCountry"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
+                android:hint="Country"
+                android:inputType="textCapWords"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlPincode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlCountry"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPincode"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Pincode:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etactivity_add_new_address_receiver_Pincode"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@+id/tvPincode"
+                android:hint="PINCODE"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:maxLength="6"
+                android:singleLine="true" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/bactivity_add_new_address_receiver_SaveAddress"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/blue"
+            android:text="Continue"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+</RelativeLayout>

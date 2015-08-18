@@ -42,6 +42,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:singleLine="true"
         android:id="@+id/etItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,6 +65,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:singleLine="true"
         android:id="@+id/etItemValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,6 +88,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:singleLine="true"
         android:id="@+id/etItemweight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -108,6 +111,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:singleLine="true"
         android:id="@+id/etItemPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

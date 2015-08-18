@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,21 +28,18 @@ import co.sendddelivery.GetterandSetter.Customer_shipment;
 import co.sendddelivery.GetterandSetter.ShipmentsListItems;
 import co.sendddelivery.R;
 
-/**
- * Created by harshkaranpuria on 7/27/15.
- */
 public class Customer_OrderDetails extends Activity {
     List<Customer_shipment> mCustomer_Shipment;
     ArrayList<ShipmentsListItems> mCustomer_shipment_list;
-    private Shipments_Adapter madapter;
     Button bProcess;
     ImageLoaderConfiguration config;
-
+    public static Activity CustomerOrderDetailsActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orderdetails);
+        CustomerOrderDetailsActivity = this;
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
@@ -56,16 +52,15 @@ public class Customer_OrderDetails extends Activity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), CustomerOrderSubDetails.class);
-                Gson GS = new Gson();
-                String CSList = GS.toJson(mCustomer_shipment_list);
                 i.putExtra("Customer_shipment_object", getIntent().getStringExtra("Customer_shipment_object"));
                 startActivity(i);
+                Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
             }
         });
         TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
         TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
         TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
-        TextView pickuptimeLable = (TextView) findViewById(R.id.pickuptimeLable);
         String Customer_order_object = getIntent().getStringExtra("Customer_order_object");
         final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
 
@@ -76,9 +71,8 @@ public class Customer_OrderDetails extends Activity {
         nameLabel.setText( customer_order.getName());
         addressLabel.setText(  customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode());
         phoneLabel.setText(   customer_order.getUser());
-        pickuptimeLable.setText(  customer_order.getPickup_time());
         ListView lv_Saved_Address = (ListView) findViewById(R.id.shipmentList);
-        madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ShowAddressToList());
+        Shipments_Adapter madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ShowAddressToList());
         lv_Saved_Address.setAdapter(madapter);
 
 
@@ -150,13 +144,14 @@ public class Customer_OrderDetails extends Activity {
             //setup list objects
 
             shipment_holder.Shipment_number.setText(address_list.get(position).getShipment_number());
-            Log.i("mCustomer_Shipment.get(i).getReal_tracking_no()", address_list.get(position).getShipment_number());
-
             if (address_list.get(position).getImageUrl() ==  null) {
                 ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
-            } else {
+            }else if (address_list.get(position).getImageUrl().equals("")){
+                ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
+            }else if(address_list.get(position).getImageUrl().equals("null")){
+                ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
+            }else {
                 ImageLoader.getInstance().displayImage(address_list.get(position).getImageUrl(), shipment_holder.Shpiment_image);
-
             }
             return convertView;
         }
@@ -174,5 +169,11 @@ public class Customer_OrderDetails extends Activity {
         }
 
         return mCustomer_shipment_list;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 }

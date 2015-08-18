@@ -16,6 +16,25 @@ public class CustomerPatch {
     private String locality;
     private String pincode;
     private String state;
+    private String drop_name;
+
+    public String getDrop_phone() {
+        return drop_phone;
+    }
+
+    public void setDrop_phone(String drop_phone) {
+        this.drop_phone = drop_phone;
+    }
+
+    public String getDrop_name() {
+        return drop_name;
+    }
+
+    public void setDrop_name(String drop_name) {
+        this.drop_name = drop_name;
+    }
+
+    private String drop_phone;
     private int drop_address_pk;
     private String cost_of_courier;
 
