@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -26,45 +27,45 @@ import co.sendddelivery.GetterandSetter.CustomerPatch;
 import co.sendddelivery.GetterandSetter.Customer_shipment;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
-import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 public class CustomerOrderSubDetails extends BaseActivity {
-    List<Customer_shipment> mCustomer_Shipment;
-    private EditText etItemweight, etItemPrice, etItemValue, etItemName;
-    Button QrScan, EnterQrcode;
-    public static String flat_no, locality, city, state, country, pincode, pk, d_name, d_phone;
+    private List<Customer_shipment> mCustomer_Shipment;
+    private EditText etItemweight, etItemPrice, etItemValue, etItemName,etLength,etBreadth,etHeight;
+    private Button QrScan, EnterQrcode;
+    public static String flat_no, locality, city, state, country, pincode, pk, d_name, d_phone, BarcodeValue;
     int counter = 0, shipmentnumber = 1;
-    NetworkUtils mnetworkutils;
-    Utils mUtils;
-    ProgressDialog mprogress;
-    TextView DestinationAddress;
-    RadioButton premium, standard, express;
-    String BarcodeValue;
-    TextView totalshipment, currentshipment;
-
+    private NetworkUtils mnetworkutils;
+    private ProgressDialog mprogress;
+    private RadioButton premium, standard, express;
+    private TextView currentshipment;
+    private TextView DestinationAddress;
+    public String promocode_type,promocode_amount;
+    public float TotalPrice = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordersubdetails);
-
-        mUtils = new Utils(this);
         setupUI(findViewById(R.id.parent));
-         DestinationAddress= (TextView) findViewById(R.id.destinationaddress);
+
+        DestinationAddress = (TextView) findViewById(R.id.destinationaddress);
         etItemName = (EditText) findViewById(R.id.etItemName);
         etItemValue = (EditText) findViewById(R.id.etItemValue);
         etItemweight = (EditText) findViewById(R.id.etItemweight);
-        totalshipment = (TextView) findViewById(R.id.TotalOrders);
+        TextView totalshipment = (TextView) findViewById(R.id.TotalOrders);
         currentshipment = (TextView) findViewById(R.id.CurrentShipment);
-
         etItemPrice = (EditText) findViewById(R.id.etItemPrice);
         premium = (RadioButton) findViewById(R.id.radio_premium);
         standard = (RadioButton) findViewById(R.id.radio_regular);
         express = (RadioButton) findViewById(R.id.radio_express);
-
+        EnterQrcode = (Button) findViewById(R.id.enterQRCode);
+        QrScan = (Button) findViewById(R.id.QrCode);
+        Button Cancel = (Button) findViewById(R.id.Cancel);
+        Button Submit = (Button) findViewById(R.id.Submit);
+        Gson GS = new Gson();
         premium.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,19 +84,16 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 calPrice();
             }
         });
+        if (getIntent().getExtras() != null) {
+            final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
+            mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
+        }
 
-        EnterQrcode = (Button) findViewById(R.id.enterQRCode);
+        promocode_type =getIntent().getStringExtra("promocode_type");
+        promocode_amount =getIntent().getStringExtra("promocode_amount");
 
-        QrScan = (Button) findViewById(R.id.QrCode);
-        Button Cancel = (Button) findViewById(R.id.Cancel);
-        Button Submit = (Button) findViewById(R.id.Submit);
-        final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
-        Gson GS = new Gson();
-
-        mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
         totalshipment.setText("Total number of shipments = " + mCustomer_Shipment.size());
-        if (getIntent().getStringExtra("flat_no" +
-                "") != null) {
+        if (getIntent().getStringExtra("flat_no") != null) {
             flat_no = getIntent().getStringExtra("flat_no");
             locality = getIntent().getStringExtra("locality");
             city = getIntent().getStringExtra("city");
@@ -117,13 +115,12 @@ public class CustomerOrderSubDetails extends BaseActivity {
         }
         DestinationAddress.setText(flat_no + " " + locality + " " + city + " " + state + " " + country + " " + pincode);
         if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
-            Log.i("getItem_name()",mCustomer_Shipment.get(counter).getItem_name());
             etItemName.setText(mCustomer_Shipment.get(counter).getItem_name());
         } else {
             etItemName.setText("");
         }
         if (!mCustomer_Shipment.get(counter).getPrice().equals("null")) {
-            etItemPrice.setText(mCustomer_Shipment.get(counter).getPrice());
+            etItemPrice.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
 
         } else {
             etItemPrice.setText("");
@@ -135,7 +132,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
             etItemweight.setText("");
         }
         if (!mCustomer_Shipment.get(counter).getCost_of_courier().equals("null")) {
-            etItemValue.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
+            etItemValue.setText(mCustomer_Shipment.get(counter).getPrice());
 
         } else {
             etItemValue.setText("");
@@ -175,7 +172,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 mprogress.setCancelable(false);
                 mprogress.setIndeterminate(true);
                 if (mnetworkutils.isnetconnected()) {
-
                     mprogress.show();
                     mnetworkutils.getapi().updateCustomer(mCustomer_Shipment.get(counter).getReal_tracking_no(), cp, new Callback<CustomerPatch>() {
                                 @Override
@@ -195,7 +191,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                         pk = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pk();
                                         d_name = mCustomer_Shipment.get(counter).getDrop_name();
                                         d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
-
                                         currentshipment.setText("Shipment number " + shipmentnumber);
                                         DestinationAddress.setText(mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode());
                                         if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
@@ -204,7 +199,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                             etItemName.setText("");
                                         }
                                         if (!mCustomer_Shipment.get(counter).getPrice().equals("null")) {
-                                            etItemPrice.setText(mCustomer_Shipment.get(counter).getPrice());
+                                            etItemPrice.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
 
                                         } else {
                                             etItemPrice.setText("");
@@ -216,7 +211,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                             etItemweight.setText("");
                                         }
                                         if (!mCustomer_Shipment.get(counter).getCost_of_courier().equals("null")) {
-                                            etItemValue.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
+                                            etItemValue.setText(mCustomer_Shipment.get(counter).getPrice());
 
                                         } else {
                                             etItemValue.setText("");
@@ -225,8 +220,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                         Intent i = new Intent(getApplicationContext(), Activity_Orders.class);
                                         startActivity(i);
                                         finish();
+                                        Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
                                         CustomerOrderSubDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-
                                     }
 
                                 }
@@ -249,7 +244,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
         DestinationAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), CustomerOrderSubDetails1.class);
+                Intent i = new Intent(getApplicationContext(), CustomerOrderSubDetails_EditAddress.class);
                 i.putExtra("d_phone", d_phone);
                 i.putExtra("d_name", d_name);
                 i.putExtra("flat_no", flat_no);
@@ -258,6 +253,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 i.putExtra("state", state);
                 i.putExtra("city", city);
                 i.putExtra("pincode", pincode);
+                i.putExtra("promocode_amount",getIntent().getStringExtra("promocode_amount"));
+                i.putExtra("promocode_type",getIntent().getStringExtra("promocode_type"));
                 i.putExtra("Customer_shipment_object", getIntent().getStringExtra("Customer_shipment_object"));
                 startActivity(i);
                 CustomerOrderSubDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
@@ -307,9 +304,9 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                 CustomerPatch cp = new CustomerPatch();
                                                                 cp.setWeight(etItemweight.getText().toString());
                                                                 cp.setStatus("PU");
-                                                                cp.setPrice(etItemPrice.getText().toString());
+                                                                cp.setPrice(etItemValue.getText().toString());
                                                                 cp.setName(etItemName.getText().toString());
-                                                                cp.setCost_of_courier(etItemValue.getText().toString());
+                                                                cp.setCost_of_courier(etItemPrice.getText().toString());
                                                                 cp.setBarcode(BarcodeValue);
                                                                 cp.setDrop_address_pk(Integer.parseInt(pk));
                                                                 cp.setCity(city);
@@ -338,6 +335,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                     mnetworkutils.getapi().updateCustomer(mCustomer_Shipment.get(counter).getReal_tracking_no(), cp, new Callback<CustomerPatch>() {
                                                                                 @Override
                                                                                 public void success(CustomerPatch response, Response response1) {
+                                                                                    TotalPrice = Float.parseFloat(etItemValue.getText().toString())+TotalPrice;
                                                                                     if (mprogress.isShowing()) {
                                                                                         mprogress.dismiss();
                                                                                     }
@@ -361,7 +359,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                             etItemName.setText("");
                                                                                         }
                                                                                         if (!mCustomer_Shipment.get(counter).getPrice().equals("null")) {
-                                                                                            etItemPrice.setText(mCustomer_Shipment.get(counter).getPrice());
+                                                                                            etItemPrice.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
 
                                                                                         } else {
                                                                                             etItemPrice.setText("");
@@ -373,15 +371,20 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                             etItemweight.setText("");
                                                                                         }
                                                                                         if (!mCustomer_Shipment.get(counter).getCost_of_courier().equals("null")) {
-                                                                                            etItemValue.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
+                                                                                            etItemValue.setText(mCustomer_Shipment.get(counter).getPrice());
 
                                                                                         } else {
                                                                                             etItemValue.setText("");
                                                                                         }
                                                                                     } else {
-                                                                                        Intent i = new Intent(getApplicationContext(), Activity_Orders.class);
+
+                                                                                        Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
+                                                                                        i.putExtra("promocode_type",promocode_type);
+                                                                                        i.putExtra("promocode_amount",promocode_amount);
+                                                                                        i.putExtra("TotalPrice",TotalPrice);
                                                                                         startActivity(i);
                                                                                         finish();
+                                                                                        Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
                                                                                         CustomerOrderSubDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                                                                                     }
 
@@ -441,34 +444,11 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 }
             }
         });
-
-
     }
 
     public void onResume() {
         super.onResume();
         DestinationAddress.setText(flat_no + " " + locality + " " + city + " " + state + " " + country + " " + pincode);
-
-//        if (getIntent().getStringExtra("flat_no") != null) {
-//            flat_no = getIntent().getStringExtra("flat_no");
-//            locality = getIntent().getStringExtra("locality");
-//            city = getIntent().getStringExtra("city");
-//            state = getIntent().getStringExtra("state");
-//            country = getIntent().getStringExtra("country");
-//            pincode = getIntent().getStringExtra("pincode");
-//            d_name = getIntent().getStringExtra("d_name");
-//            d_phone = getIntent().getStringExtra("d_phone");
-//        } else {
-//            flat_no = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no();
-//            locality = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality();
-//            city = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city();
-//            state = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state();
-//            country = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country();
-//            pincode = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode();
-//            pk = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pk();
-//            d_name = mCustomer_Shipment.get(counter).getDrop_name();
-//            d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
-//        }
     }
 
     @Override
@@ -482,12 +462,9 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 Log.d("MainActivity", "Scanned");
                 QrScan.setText(result.getContents());
                 BarcodeValue = result.getContents();
-
-//                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
             }
         } else {
             Log.d("MainActivity", "Weird");
-            // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -500,7 +477,13 @@ public class CustomerOrderSubDetails extends BaseActivity {
     }
 
     public void calPrice() {
+
         try {
+            float w = (float) Double.parseDouble(etItemweight.getText().toString());
+//            float volWeight = ((float) Double.parseDouble(etLength.getText().toString())*(float) Double.parseDouble(etBreadth.getText().toString())*(float) Double.parseDouble(etHeight.getText().toString()))/5000;
+//            if(volWeight >w){
+//                w = volWeight;
+//            }
             int[][] premium11 = new int[][]{{60, 30}, {90, 45}, {120, 50}, {140, 60}, {160, 65}};
             int[][] standard11 = new int[][]{{30, 28}, {60, 42}, {80, 47}, {100, 57}, {105, 62}};
             int[][] economy11 = new int[][]{{240, 15, 30}, {260, 15, 32}, {280, 15, 34}, {290, 15, 35}, {290, 15, 35}};
@@ -509,8 +492,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
             int t = Integer.parseInt(firsttwo);
             int z = Integer.parseInt(firstthree);
             int zone;
-            //Log.i("etItemweight", String.valueOf(Integer.parseInt(etItemweight.getText().toString())));
-            float w = (float) Double.parseDouble(etItemweight.getText().toString());
             double priceCalculated = 0;
             if (t == 40 && z != 403) {
                 zone = 0;
@@ -525,10 +506,10 @@ public class CustomerOrderSubDetails extends BaseActivity {
             }
 
             if (premium.isChecked()) {
-                priceCalculated = 1 * premium11[zone][0] + (Math.ceil(2 * w - 1)) * premium11[zone][1];
+                priceCalculated = premium11[zone][0] + (Math.ceil(2 * w - 1)) * premium11[zone][1];
 
             } else if (standard.isChecked()) {
-                priceCalculated = 1 * standard11[zone][0] + (Math.ceil(2 * w - 1)) * standard11[zone][1];
+                priceCalculated = standard11[zone][0] + (Math.ceil(2 * w - 1)) * standard11[zone][1];
 
             } else if (express.isChecked()) {
                 if (w >= 10) {
@@ -548,31 +529,23 @@ public class CustomerOrderSubDetails extends BaseActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         savedInstanceState.putString("Barcode", BarcodeValue);
         savedInstanceState.putString("name", etItemName.getText().toString());
         savedInstanceState.putString("price", etItemPrice.getText().toString());
-
         savedInstanceState.putString("value", etItemValue.getText().toString());
-
         savedInstanceState.putString("weight", etItemweight.getText().toString());
         savedInstanceState.putString("pk", pk);
-
-
-        // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can restore the view hierarchy
-        super.onRestoreInstanceState(savedInstanceState);
 
-        // Restore state members from saved instance
+    public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
         BarcodeValue = savedInstanceState.getString("Barcode");
         etItemName.setText(savedInstanceState.getString("name"));
-        etItemPrice.setText( savedInstanceState.getString("price"));
-        etItemValue.setText( savedInstanceState.getString("value"));
-        etItemweight.setText( savedInstanceState.getString("weight"));
+        etItemPrice.setText(savedInstanceState.getString("price"));
+        etItemValue.setText(savedInstanceState.getString("value"));
+        etItemweight.setText(savedInstanceState.getString("weight"));
         pk = savedInstanceState.getString("pk");
     }
 }

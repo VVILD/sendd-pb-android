@@ -89,7 +89,7 @@ public class Login_fragment extends Fragment {
     }
 
     public interface onLoginListner {
-        void onSuccessfulLogin(String phone_no, String Otp);
+         void onSuccessfulLogin(String phone_no, String Otp);
     }
 
     @Override

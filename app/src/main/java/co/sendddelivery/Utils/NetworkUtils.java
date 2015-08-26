@@ -38,7 +38,6 @@ public class NetworkUtils {
             .registerTypeAdapter(Date.class, new DateDeserializer())
             .create();
     private Context mcontext;
-
     public NetworkUtils(Context c) {
         this.mcontext = c;
     }

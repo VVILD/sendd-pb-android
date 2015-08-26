@@ -51,7 +51,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRefreshListener  {
+public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     private NetworkUtils mnetworkutils = new NetworkUtils(this);
     private PendingOrders_Adapter madapter;
     private ArrayList<AllOrders> allOrders;
@@ -70,6 +70,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         }
         return false;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +78,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         mUtils = new Utils(this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        if(!isMyServiceRunning(LocationService.class)){
+        if (!isMyServiceRunning(LocationService.class)) {
             Intent intent = new Intent(this, LocationService.class);
             startService(intent);
         }
@@ -186,7 +187,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-               updateOrders();
+                updateOrders();
                 return true;
             }
         });
@@ -204,6 +205,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         };
         timer.start();
     }
+
     public ArrayList<AllOrders> ShowAddressToList() throws ParseException {
         DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
         allOrders = new ArrayList<>();
@@ -327,6 +329,14 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                             CO.setPincode(Customer_order.getString("pincode"));
                                             CO.setPickup_time(Customer_order.getString("pickup_time"));
                                             CO.setUser(Customer_order.getString("user"));
+                                            if (Customer_order.getString("promocode_type") != null)
+                                                CO.setPromocode_type(Customer_order.getString("promocode_type"));
+                                            else
+                                                CO.setPromocode_type("NO CODE");
+                                            if (Customer_order.getString("promocode_amount") != null)
+                                                CO.setPromocode_amount(Customer_order.getString("promocode_amount"));
+                                            else
+                                                CO.setPromocode_amount("0");
 
                                             ArrayList<Customer_shipment> Customer_Shpiment_List = new ArrayList<>();
                                             JSONArray Customer_shipment = booking.getJSONArray("shipments");
@@ -423,6 +433,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
             mprogress.dismiss();
         }
     }
+
     @Override
     public void onRefresh() {
         updateOrders();

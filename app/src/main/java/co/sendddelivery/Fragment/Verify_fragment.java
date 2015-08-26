@@ -39,10 +39,10 @@ public class Verify_fragment extends Fragment {
         Verify= (Button)view.findViewById(R.id.bVerify);
         mUtils = new Utils(getActivity());
         Bundle b = getArguments();
+        Log.i("asd",b.getString("OTP"));
         phone = b.getString("PhoneNumber");
         otp = b.getString("OTP");
-        Log.i("OTP =",b.getString("OTP"));
-        Verify.setOnClickListener(new View.OnClickListener() {
+         Verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (OTP.getText().toString().equals(otp)) {

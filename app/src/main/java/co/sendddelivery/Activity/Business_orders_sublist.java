@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,9 +39,6 @@ import java.util.List;
 import co.sendddelivery.GetterandSetter.BusinessAllOrders;
 import co.sendddelivery.GetterandSetter.Business_Order;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
-import co.sendddelivery.GetterandSetter.Customer_Order;
-import co.sendddelivery.GetterandSetter.Customer_shipment;
-import co.sendddelivery.GetterandSetter.Drop_address;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
@@ -69,12 +67,20 @@ public class Business_orders_sublist extends Activity {
         TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
         TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
         TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
-        TextView pickuptimeLable = (TextView) findViewById(R.id.pickuptimeLable);
         scanQRCODE = (Button) findViewById(R.id.bScan_order);
         EnterQRCode = (Button)findViewById(R.id.bEnter_Code);
         final String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
         final String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
-
+        phoneLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                if(BAO.get(0).getBO().getB_contact_mob() != null) {
+                    callIntent.setData(Uri.parse("tel:" + BAO.get(0).getBO().getB_contact_mob()));
+                }
+                startActivity(callIntent);
+            }
+        });
         final String pendingOrders = getIntent().getStringExtra("PendingOrderList");
         businessUserName = getIntent().getStringExtra("Business_username");
         Gson GS = new Gson();
@@ -91,13 +97,6 @@ public class Business_orders_sublist extends Activity {
         }
         ListView lv_Saved_Address = (ListView) findViewById(R.id.businesssubordersListView);
         madapter = new BusinessOrders_Adapter(Business_orders_sublist.this, R.layout.businessorders_list_item_list, ShowAddressToList());
-
-//        if(getIntent().getStringExtra("ABO")!= null){
-//            final String BUsiness_shipment_object = getIntent().getStringExtra("ABO");
-//            BAllOrder = Arrays.asList(GS.fromJson(BUsiness_shipment_object, BusinessAllOrders[].class));
-//            madapter = new BusinessOrders_Adapter(Business_orders_sublist.this, R.layout.businessorders_list_item_list,BAllOrder);
-//        }else {
-        //}
         lv_Saved_Address.setAdapter(madapter);
         lv_Saved_Address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -216,7 +215,6 @@ public class Business_orders_sublist extends Activity {
                                                     PO.setBusiness_Order(BO);
                                                     PO.setBusiness_Shipment(Business_Shpiment_List);
                                                     Pending_Orders_List.add(PO);
-                                                    Log.i("String.valueOf(Pending_Orders_List.size())", String.valueOf(Pending_Orders_List.size()));
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
@@ -244,7 +242,7 @@ public class Business_orders_sublist extends Activity {
                                                 mprogress.dismiss();
                                             }
                                             String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                            Log.v("failure", json.toString());
+                                            Log.v("failure", json);
                                             Log.i("qwertyuiopajklzxcvbnm,", error.toString());
 
                                         }
@@ -319,29 +317,20 @@ public class Business_orders_sublist extends Activity {
                 Business_holder = new BusinessOrder_holder();
                 LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.businessorders_list_item_list, parent, false);
-
                 Business_holder.Order_Name = (TextView) convertView.findViewById(R.id.Order_Name);
                 convertView.setTag(Business_holder);
             } else {
                 Business_holder = (BusinessOrder_holder) convertView.getTag();
             }
-            //setup list objects
-//            if(address_list.get(position).getIsComplete()){
-//                convertView.setBackgroundColor( Color.argb(0x80, 0x20, 0xa0, 0x40));
-//            }
             Business_holder.Order_Name.setText(address_list.get(position).getOrder_name());
 
             return convertView;
         }
-        //Get all Saved Addresses in Address_Receiver DB.
-
-
     }
 
     public ArrayList<BusinessAllOrders> ShowAddressToList() {
 
 
-        int counter = 1;
         int pendingorderId = 0;
         BusinessallOrders = new ArrayList<>();
         for (int i = 0; i < mPending_Order_list.size(); i++) {
@@ -355,7 +344,6 @@ public class Business_orders_sublist extends Activity {
                         allorders.setBS(mPending_Order_list.get(i).getBusiness_Shipment());
                         allorders.setPendingOrderId(pendingorderId);
                         BusinessallOrders.add(allorders);
-                        counter++;
                     }
                 }
             }
@@ -383,7 +371,6 @@ public class Business_orders_sublist extends Activity {
                 mprogress.setIndeterminate(true);
                 if (mnetworkutils.isnetconnected()) {
                     barcodevalue = result.getContents();
-                    Log.i("barcodevalue",barcodevalue);
                     mprogress.show();
                     mnetworkutils.getapi().getorder(barcodevalue, new Callback<Response>() {
                                 @Override
@@ -477,7 +464,7 @@ public class Business_orders_sublist extends Activity {
                                     }
                                     Toast.makeText(Business_orders_sublist.this,"Barcode Already Exist",Toast.LENGTH_LONG).show();
                                     String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                    Log.v("failure", json.toString());
+                                    Log.v("failure", json);
                                     Log.i("qwertyuiopajklzxcvbnm,", error.toString());
 
                                 }
@@ -493,7 +480,6 @@ public class Business_orders_sublist extends Activity {
 
             }
         } else {
-            Log.d("MainActivity", "Weird");
             super.onActivityResult(requestCode, resultCode, data);
         }
     }

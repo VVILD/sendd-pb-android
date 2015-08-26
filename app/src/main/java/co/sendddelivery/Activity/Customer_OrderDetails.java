@@ -3,8 +3,8 @@ package co.sendddelivery.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,37 +45,44 @@ public class Customer_OrderDetails extends Activity {
                 .cacheOnDisk(true)
                 .build();
         config = new ImageLoaderConfiguration.Builder(this).defaultDisplayImageOptions(defaultOptions).build();
-
         ImageLoader.getInstance().init(config);
         bProcess = (Button) findViewById(R.id.bProcess);
+
+
+        TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
+        TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
+        final TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
+        phoneLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:"+phoneLabel.getText().toString()));
+                startActivity(callIntent);
+            }
+        });
+        String Customer_order_object = getIntent().getStringExtra("Customer_order_object");
+        final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
+
+        Gson GS = new Gson();
+        final Customer_Order customer_order = GS.fromJson(Customer_order_object, Customer_Order.class);
+        mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
+        nameLabel.setText(customer_order.getName());
+        addressLabel.setText(customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode());
+        phoneLabel.setText(customer_order.getUser());
         bProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), CustomerOrderSubDetails.class);
                 i.putExtra("Customer_shipment_object", getIntent().getStringExtra("Customer_shipment_object"));
+                i.putExtra("promocode_amount",customer_order.getPromocode_amount());
+                i.putExtra("promocode_type",customer_order.getPromocode_type());
                 startActivity(i);
                 Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-
             }
         });
-        TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
-        TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
-        TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
-        String Customer_order_object = getIntent().getStringExtra("Customer_order_object");
-        final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
-
-        Gson GS = new Gson();
-        Customer_Order customer_order = GS.fromJson(Customer_order_object, Customer_Order.class);
-        mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
-        Log.i("List<Customer_shipment>", String.valueOf(mCustomer_Shipment.size()));
-        nameLabel.setText( customer_order.getName());
-        addressLabel.setText(  customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode());
-        phoneLabel.setText(   customer_order.getUser());
         ListView lv_Saved_Address = (ListView) findViewById(R.id.shipmentList);
-        Shipments_Adapter madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ShowAddressToList());
+        Shipments_Adapter madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ALLShipments());
         lv_Saved_Address.setAdapter(madapter);
-
-
     }
 
     public class Shipments_holder {
@@ -83,7 +90,6 @@ public class Customer_OrderDetails extends Activity {
         private ImageView Shpiment_image;
     }
 
-    //Set up Address Adapter
     public class Shipments_Adapter extends ArrayAdapter<ShipmentsListItems> {
 
         private Context c;
@@ -130,7 +136,6 @@ public class Customer_OrderDetails extends Activity {
         public View getView(int position, View convertView, ViewGroup parent) {
             Shipments_holder shipment_holder;
             if (convertView == null) {
-                //initialize holder
                 shipment_holder = new Shipments_holder();
                 LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.list_item_shipment_items_list, parent, false);
@@ -141,35 +146,33 @@ public class Customer_OrderDetails extends Activity {
             } else {
                 shipment_holder = (Shipments_holder) convertView.getTag();
             }
-            //setup list objects
-
             shipment_holder.Shipment_number.setText(address_list.get(position).getShipment_number());
-            if (address_list.get(position).getImageUrl() ==  null) {
+            if (address_list.get(position).getImageUrl() == null) {
                 ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
-            }else if (address_list.get(position).getImageUrl().equals("")){
+            } else if (address_list.get(position).getImageUrl().equals("")) {
                 ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
-            }else if(address_list.get(position).getImageUrl().equals("null")){
+            } else if (address_list.get(position).getImageUrl().equals("null")) {
                 ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, shipment_holder.Shpiment_image);
-            }else {
+            } else {
                 ImageLoader.getInstance().displayImage(address_list.get(position).getImageUrl(), shipment_holder.Shpiment_image);
             }
             return convertView;
         }
     }
 
-    public ArrayList<ShipmentsListItems> ShowAddressToList() {
+    public ArrayList<ShipmentsListItems> ALLShipments() {
 
         mCustomer_shipment_list = new ArrayList<>();
         for (int i = 0; i < mCustomer_Shipment.size(); i++) {
             ShipmentsListItems sli = new ShipmentsListItems();
             sli.setShipment_number(mCustomer_Shipment.get(i).getReal_tracking_no());
             sli.setImageUrl(mCustomer_Shipment.get(i).getImg());
-
             mCustomer_shipment_list.add(sli);
         }
 
         return mCustomer_shipment_list;
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

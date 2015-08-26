@@ -3,232 +3,275 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-<RelativeLayout
-    android:id="@+id/parent"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
-    <include
-        android:id="@+id/thankyou_activity"
-        layout="@layout/toolbar_customerdetail" />
-
-    <TextView
-        android:id="@+id/TotalOrders"
+    <RelativeLayout
+        android:id="@+id/parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/thankyou_activity"
-        android:gravity="center"
-        android:text="Total number of shipments = 1"
-        android:textSize="20sp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/CurrentShipment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/TotalOrders"
-        android:gravity="center"
-        android:text="Shipment number 1"
-        android:textSize="20sp" />
 
-    <TextView
-        android:background="@drawable/border_edittext"
-        android:id="@+id/destinationaddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/CurrentShipment"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
-        android:gravity="center"
-        android:text="A-3 35 Grren Fields JVLR andheri EAST mumbai 400093"
-        android:textSize="20sp" />
+        <include
+            android:id="@+id/thankyou_activity"
+            layout="@layout/toolbar_customerdetail" />
+        <TextView
+            android:id="@+id/TotalOrders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/thankyou_activity"
+            android:gravity="center"
+            android:text="Total number of shipments = 1"
+            android:textSize="20sp" />
 
-    <RadioGroup
-        android:id="@+id/modeofshipment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/destinationaddress"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="15dp"
-        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/CurrentShipment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/TotalOrders"
+            android:gravity="center"
+            android:text="Shipment number 1"
+            android:textSize="20sp" />
 
-        <RadioButton
-            android:id="@+id/radio_premium"
+        <TextView
+            android:id="@+id/destinationaddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Premium" />
-
-        <RadioButton
-            android:id="@+id/radio_regular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Standard" />
-
-        <RadioButton
-            android:id="@+id/radio_express"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bulk" />
-
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/nametext"
-        android:layout_width="135dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/modeofshipment"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Item Name:"
-        android:textSize="20sp" />
-
-    <EditText
-        android:singleLine="true"
-        android:id="@+id/etItemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/nametext"
-        android:layout_below="@+id/modeofshipment"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/nametext"
-        android:hint="Enter Item Name" />
-
-    <TextView
-        android:inputType="numberDecimal"
-        android:id="@+id/pricetext"
-        android:layout_width="135dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nametext"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Price of item:"
-        android:textSize="20sp" />
-
-    <EditText
-        android:inputType="numberDecimal"
-
-        android:singleLine="true"
-        android:id="@+id/etItemPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pricetext"
-        android:layout_below="@+id/nametext"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/pricetext"
-        android:hint="Enter Item Name" />
-
-
-    <TextView
-        android:id="@+id/weighttext"
-        android:layout_width="135dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/pricetext"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Weight"
-        android:textSize="20sp" />
-
-    <EditText
-        android:inputType="numberDecimal"
-        android:singleLine="true"
-        android:id="@+id/etItemweight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/weighttext"
-        android:layout_below="@+id/pricetext"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/weighttext"
-        android:hint="Enter Item Weight" />
-
-    <TextView
-        android:id="@+id/valuetext"
-        android:layout_width="135dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/weighttext"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Price Charged:"
-        android:textSize="20sp" />
-
-    <EditText
-        android:singleLine="true"
-        android:id="@+id/etItemValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/valuetext"
-        android:layout_below="@+id/weighttext"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/valuetext"
-        android:hint="Enter Item Value" />
-
-    <LinearLayout
-        android:id="@+id/llthree"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etItemValue"
-        android:layout_marginTop="20dp"
-        android:weightSum="100">
-
-        <Button
-            android:id="@+id/enterQRCode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="50"
-            android:background="@color/blue"
-            android:padding="5dp"
-            android:text="Enter QR Code"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/QrCode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="50"
-            android:background="@color/blue"
-            android:padding="5dp"
-            android:text="Scan QR Code"
-            android:textColor="@color/white" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_below="@+id/llthree"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:weightSum="100">
-
-        <Button
-            android:id="@+id/Submit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_below="@+id/CurrentShipment"
             android:layout_centerHorizontal="true"
-            android:layout_marginRight="10dp"
-            android:layout_weight="50"
-            android:background="@color/blue"
-            android:padding="5dp"
-            android:text="Finish Order"
-            android:textColor="@color/white" />
+            android:layout_margin="20dp"
+            android:background="@drawable/border_edittext"
+            android:gravity="center"
+            android:text="A-3 35 Grren Fields JVLR andheri EAST mumbai 400093"
+            android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/Cancel"
+        <RadioGroup
+            android:id="@+id/modeofshipment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/QrCode"
+            android:layout_below="@+id/destinationaddress"
             android:layout_centerHorizontal="true"
+            android:layout_margin="15dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_premium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Premium" />
+
+            <RadioButton
+                android:id="@+id/radio_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Standard" />
+
+            <RadioButton
+                android:id="@+id/radio_express"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bulk" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/nametext"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/modeofshipment"
             android:layout_marginLeft="10dp"
-            android:layout_weight="50"
-            android:background="@color/blue"
-            android:padding="5dp"
-            android:text="Cancel"
-            android:textColor="@color/white" />
-    </LinearLayout>
-</RelativeLayout>
-    </ScrollView>
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Item Name:"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etItemName"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/nametext"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:hint="Enter Item Name"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/pricetext"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/nametext"
+            android:layout_below="@+id/modeofshipment"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/nametext"
+            android:inputType="numberDecimal"
+            android:text="Price of item:"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etItemPrice"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pricetext"
+            android:layout_toRightOf="@+id/etItemName"
+            android:hint="Enter Item Price"
+            android:inputType="numberDecimal"
+            android:singleLine="true" />
+
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/lldimensions"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/etItemPrice"-->
+            <!--android:layout_margin="10dp"-->
+            <!--android:background="@android:drawable/dialog_holo_light_frame"-->
+            <!--android:weightSum="100">-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/etItemLength"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginRight="10dp"-->
+                <!--android:layout_weight="33"-->
+                <!--android:gravity="center"-->
+                <!--android:hint="Length"-->
+                <!--android:inputType="numberDecimal"-->
+                <!--android:singleLine="true" />-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/etItemBreadth"-->
+                <!--android:layout_width="wrap_content"-->
+
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/weighttext"-->
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:layout_marginRight="10dp"-->
+                <!--android:layout_weight="33"-->
+                <!--android:gravity="center"-->
+                <!--android:hint="Breadth"-->
+
+                <!--android:inputType="numberDecimal"-->
+                <!--android:singleLine="true" />-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/etItemHeight"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/weighttext"-->
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:layout_weight="33"-->
+                <!--android:gravity="center"-->
+                <!--android:hint="Height"-->
+                <!--android:inputType="numberDecimal"-->
+                <!--android:singleLine="true" />-->
+        <!--</RelativeLayout>-->
+
+        <TextView
+            android:id="@+id/weighttext"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etItemPrice"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Weight"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etItemweight"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weighttext"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:hint="Enter Item Weight"
+
+            android:inputType="numberDecimal"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/valuetext"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etItemPrice"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/weighttext"
+            android:text="Price Charged:"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etItemValue"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/etItemweight"
+            android:layout_below="@+id/weighttext"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/etItemweight"
+            android:hint="Enter Item Value"
+            android:singleLine="true" />
+
+        <LinearLayout
+            android:id="@+id/llthree"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etItemValue"
+            android:layout_marginTop="20dp"
+            android:weightSum="100">
+
+            <Button
+                android:id="@+id/enterQRCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="50"
+                android:background="@color/blue"
+                android:padding="5dp"
+                android:text="Enter QR Code"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/QrCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="50"
+                android:background="@color/blue"
+                android:padding="5dp"
+                android:text="Scan QR Code"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/llthree"
+            android:weightSum="100">
+
+            <Button
+                android:id="@+id/Submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="10dp"
+                android:layout_weight="50"
+                android:background="@color/blue"
+                android:padding="5dp"
+                android:text="Finish Order"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/Cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/QrCode"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="50"
+                android:background="@color/blue"
+                android:padding="5dp"
+                android:text="Cancel"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

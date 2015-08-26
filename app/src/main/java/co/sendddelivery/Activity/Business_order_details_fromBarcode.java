@@ -12,18 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import co.sendddelivery.GetterandSetter.BusinessAllOrders;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
-import co.sendddelivery.GetterandSetter.Pending_Orders;
-import co.sendddelivery.GetterandSetter.ShipmentsListItems;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import co.sendddelivery.Utils.Utils;
@@ -34,15 +28,12 @@ import retrofit.mime.TypedByteArray;
 
 public class Business_order_details_fromBarcode extends Activity {
     List<Business_Shipment> mBusiness_Shipment;
-    Boolean x = true;
     Button QrScan;
-    int counter = 0, shipmentnumber = 1;
+    int counter = 0;
     NetworkUtils mnetworkutils;
     Utils mUtils;
     ProgressDialog mprogress;
-    ArrayList<Pending_Orders> mPending_Order_list;
     TextView totalshipment, currentshipment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +81,7 @@ public class Business_order_details_fromBarcode extends Activity {
                                     i.putExtra("PendingOrderList", ForwardIntent_POL);
                                     startActivity(i);
                                     finish();
-
-
+                                    Business_order_details_fromBarcode.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
                                 }
 
                                 @Override
@@ -137,7 +127,6 @@ public class Business_order_details_fromBarcode extends Activity {
                                     finish();
                                     Business_order_details_fromBarcode.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
 
-
                                 }
 
                                 @Override
@@ -146,10 +135,9 @@ public class Business_order_details_fromBarcode extends Activity {
                                         mprogress.dismiss();
                                     }
                                     String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                    Log.v("failure", json.toString());
+                                    Log.v("failure", json);
                                 }
                             }
-
                     );
                 } else {
                     Toast.makeText(Business_order_details_fromBarcode.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
@@ -158,7 +146,6 @@ public class Business_order_details_fromBarcode extends Activity {
         });
         final String Customer_shipment_object = getIntent().getStringExtra("Business_Shipment");
         mBusiness_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Business_Shipment[].class));
-        ShipmentsListItems sli = new ShipmentsListItems();
         if (!mBusiness_Shipment.get(counter).getName().equals("null")) {
             etItemName.setText(mBusiness_Shipment.get(counter).getName());
         } else {
@@ -166,24 +153,22 @@ public class Business_order_details_fromBarcode extends Activity {
         }
         if (!mBusiness_Shipment.get(counter).getPrice().equals("null")) {
             etItemPrice.setText(mBusiness_Shipment.get(counter).getPrice());
-
         } else {
             etItemPrice.setText("");
         }
         if (!mBusiness_Shipment.get(counter).getWeight().equals("null")) {
             etItemweight.setText(mBusiness_Shipment.get(counter).getWeight());
-
         } else {
             etItemweight.setText("");
         }
         if (!mBusiness_Shipment.get(counter).getSku().equals("null")) {
             etItemValue.setText(mBusiness_Shipment.get(counter).getSku());
-
         } else {
             etItemValue.setText("");
         }
 
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
