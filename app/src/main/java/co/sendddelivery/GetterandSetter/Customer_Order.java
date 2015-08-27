@@ -14,6 +14,24 @@ public class Customer_Order implements Serializable {
     private String user;
     private String promocode_amount;
     private String promocode_type;
+    private String promocode_code;
+    private String promocode_msg;
+
+    public String getPromocode_code() {
+        return promocode_code;
+    }
+
+    public void setPromocode_code(String promocode_code) {
+        this.promocode_code = promocode_code;
+    }
+
+    public String getPromocode_msg() {
+        return promocode_msg;
+    }
+
+    public void setPromocode_msg(String promocode_msg) {
+        this.promocode_msg = promocode_msg;
+    }
 
     public String getPromocode_amount() {
         return promocode_amount;

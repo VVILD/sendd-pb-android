@@ -24,9 +24,6 @@ import retrofit.RestAdapter;
 import retrofit.client.ApacheClient;
 import retrofit.converter.GsonConverter;
 
-/**
- * Created by Kuku on 17/02/15.
- */
 public class NetworkUtils {
 
     private static final String[] DATE_FORMATS = new String[]{

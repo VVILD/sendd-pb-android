@@ -34,7 +34,7 @@ import retrofit.mime.TypedByteArray;
 
 public class CustomerOrderSubDetails extends BaseActivity {
     private List<Customer_shipment> mCustomer_Shipment;
-    private EditText etItemweight, etItemPrice, etItemValue, etItemName,etLength,etBreadth,etHeight;
+    private EditText etItemweight, etItemPrice, etItemValue, etItemName, etLength, etBreadth, etHeight;
     private Button QrScan, EnterQrcode;
     public static String flat_no, locality, city, state, country, pincode, pk, d_name, d_phone, BarcodeValue;
     int counter = 0, shipmentnumber = 1;
@@ -43,8 +43,9 @@ public class CustomerOrderSubDetails extends BaseActivity {
     private RadioButton premium, standard, express;
     private TextView currentshipment;
     private TextView DestinationAddress;
-    public String promocode_type,promocode_amount;
+    public String promocode_type, promocode_amount, promocode_msg, promocode_code;
     public float TotalPrice = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,8 +90,10 @@ public class CustomerOrderSubDetails extends BaseActivity {
             mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
         }
 
-        promocode_type =getIntent().getStringExtra("promocode_type");
-        promocode_amount =getIntent().getStringExtra("promocode_amount");
+        promocode_type = getIntent().getStringExtra("promocode_type");
+        promocode_amount = getIntent().getStringExtra("promocode_amount");
+        promocode_msg = getIntent().getStringExtra("promocode_msg");
+        promocode_code = getIntent().getStringExtra("promocode_code");
 
         totalshipment.setText("Total number of shipments = " + mCustomer_Shipment.size());
         if (getIntent().getStringExtra("flat_no") != null) {
@@ -182,6 +185,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                     shipmentnumber++;
                                     counter++;
                                     if (counter < mCustomer_Shipment.size()) {
+                                        EnterQrcode.setText("Enter QR Code");
+                                        QrScan.setText("Scan QR Code");
                                         flat_no = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no();
                                         locality = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality();
                                         city = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city();
@@ -217,7 +222,12 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                             etItemValue.setText("");
                                         }
                                     } else {
-                                        Intent i = new Intent(getApplicationContext(), Activity_Orders.class);
+                                        Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
+                                        i.putExtra("promocode_type", promocode_type);
+                                        i.putExtra("promocode_amount", promocode_amount);
+                                        i.putExtra("TotalPrice", TotalPrice);
+                                        i.putExtra("promocode_code",promocode_code);
+                                        i.putExtra("promocode_msg",promocode_msg);
                                         startActivity(i);
                                         finish();
                                         Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
@@ -253,8 +263,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 i.putExtra("state", state);
                 i.putExtra("city", city);
                 i.putExtra("pincode", pincode);
-                i.putExtra("promocode_amount",getIntent().getStringExtra("promocode_amount"));
-                i.putExtra("promocode_type",getIntent().getStringExtra("promocode_type"));
+                i.putExtra("promocode_amount", getIntent().getStringExtra("promocode_amount"));
+                i.putExtra("promocode_type", getIntent().getStringExtra("promocode_type"));
                 i.putExtra("Customer_shipment_object", getIntent().getStringExtra("Customer_shipment_object"));
                 startActivity(i);
                 CustomerOrderSubDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
@@ -335,10 +345,12 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                     mnetworkutils.getapi().updateCustomer(mCustomer_Shipment.get(counter).getReal_tracking_no(), cp, new Callback<CustomerPatch>() {
                                                                                 @Override
                                                                                 public void success(CustomerPatch response, Response response1) {
-                                                                                    TotalPrice = Float.parseFloat(etItemValue.getText().toString())+TotalPrice;
+                                                                                    TotalPrice = Float.parseFloat(etItemValue.getText().toString()) + TotalPrice;
                                                                                     if (mprogress.isShowing()) {
                                                                                         mprogress.dismiss();
                                                                                     }
+                                                                                    EnterQrcode.setText("Enter QR Code");
+                                                                                    QrScan.setText("Scan QR Code");
                                                                                     shipmentnumber++;
                                                                                     counter++;
                                                                                     if (counter < mCustomer_Shipment.size()) {
@@ -379,9 +391,11 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                     } else {
 
                                                                                         Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
-                                                                                        i.putExtra("promocode_type",promocode_type);
-                                                                                        i.putExtra("promocode_amount",promocode_amount);
-                                                                                        i.putExtra("TotalPrice",TotalPrice);
+                                                                                        i.putExtra("promocode_type", promocode_type);
+                                                                                        i.putExtra("promocode_amount", promocode_amount);
+                                                                                        i.putExtra("TotalPrice", TotalPrice);
+                                                                                        i.putExtra("promocode_code",promocode_code);
+                                                                                        i.putExtra("promocode_msg",promocode_msg);
                                                                                         startActivity(i);
                                                                                         finish();
                                                                                         Customer_OrderDetails.CustomerOrderDetailsActivity.finish();

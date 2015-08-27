@@ -29,11 +29,23 @@
             android:id="@+id/Order_Name"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/PickupTime"
             android:paddingRight="15dp"
             android:text="Art and Language Lab"
             android:textSize="25dp" />
+
+        <TextView
+            android:id="@+id/Locality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/Order_Name"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:gravity="right"
+            android:text="Powai"
+            android:textColor="@android:color/holo_red_dark" />
 
 
     </RelativeLayout>

@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="RAKHI"
+                    android:text=""
                     android:textColor="@color/blue"
                     android:textSize="30dp"
                     android:textStyle="bold" />
@@ -75,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="15 %"
+                    android:text=""
                     android:textColor="@color/blue"
                     android:textSize="30dp"
                     android:textStyle="bold" />
@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_margin="10dp"
-                android:text="200"
+                android:text=""
                 android:textSize="20dp" />
 
             <TextView
@@ -124,7 +124,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/tv11"
                 android:layout_margin="10dp"
-                android:text="30"
+                android:text=" "
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="20dp" />
 
@@ -156,7 +156,7 @@
                 android:layout_below="@+id/tv13"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="10dp"
-                android:text="170"
+                android:text=" "
                 android:textSize="30dp" />
 
 

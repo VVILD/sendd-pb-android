@@ -107,6 +107,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
 
     public class PendingOrders_holder {
         private TextView Order_Name;
+        private TextView Locality;
         private TextView PickupTime;
     }
 
@@ -163,7 +164,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                 convertView = inflater.inflate(R.layout.list_item_orders_list, parent, false);
                 pendingorders_holder.Order_Name = (TextView) convertView.findViewById(R.id.Order_Name);
                 pendingorders_holder.PickupTime = (TextView) convertView.findViewById(R.id.PickupTime);
-
+                pendingorders_holder.Locality = (TextView)convertView.findViewById(R.id.Locality);
                 convertView.setTag(pendingorders_holder);
             } else {
                 pendingorders_holder = (PendingOrders_holder) convertView.getTag();
@@ -175,6 +176,8 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                 pendingorders_holder.PickupTime.setBackgroundColor(getResources().getColor(R.color.yellow));
 
             }
+            //Log.i("address_list.get(position).getLocality()",address_list.get(position).getLocality());
+            pendingorders_holder.Locality.setText(address_list.get(position).getLocality());
             pendingorders_holder.Order_Name.setText(address_list.get(position).getOrder_name());
             pendingorders_holder.PickupTime.setText(address_list.get(position).getPickupTime());
 
@@ -217,6 +220,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                     flag = !allOrders.get(l).getOrder_name().equals(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
                 }
                 if (flag) {
+                    allorders.setLocality(Pending_Orders_List.get(i).getBusiness_Order().getB_address());
                     allorders.setBusinessUserName(Pending_Orders_List.get(i).getBusiness_Order().getB_username());
                     allorders.setOrder_name(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
                     Date date = format.parse(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
@@ -226,6 +230,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                     allOrders.add(allorders);
                 }
             } else {
+                allorders.setLocality(Pending_Orders_List.get(i).getCustomer_shipment().get(i).getDrop_address().getDrop_address_flat_no() + Pending_Orders_List.get(i).getCustomer_shipment().get(i).getDrop_address().getDrop_address_locality());
                 allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
                 allorders.setCS(Pending_Orders_List.get(i).getCustomer_shipment());
                 allorders.setOrder_name(Pending_Orders_List.get(i).getCustomer_Order().getName());
@@ -293,15 +298,15 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                             BO.setB_contact_mob(Business_order.getString("b_contact_mob"));
                                             BO.setB_contact_office(Business_order.getString("b_contact_office"));
                                             BO.setB_name(Business_order.getString("b_name"));
-                                            BO.setOrder_id(Business_order.getString("order_id"));
-                                            BO.setPickup_time(Business_order.getString("pickup_time"));
                                             BO.setB_pincode(Business_order.getString("b_pincode"));
                                             BO.setB_state(Business_order.getString("b_state"));
-                                            BO.setIsComplete(false);
-                                            BO.setName(Business_order.getString("name"));
-                                            BO.setPhone(Business_order.getString("phone"));
                                             BO.setB_username(Business_order.getString("b_username"));
-                                            BO.setB_pincode(Business_order.getString("pincode"));
+                                            BO.setName(Business_order.getString("name"));
+                                            BO.setOrder_id(Business_order.getString("order_id"));
+                                            BO.setPhone(Business_order.getString("phone"));
+                                            BO.setPickup_time(Business_order.getString("pickup_time"));
+                                            BO.setPincode(Business_order.getString("pincode"));
+                                            BO.setIsComplete(false);
                                             ArrayList<Business_Shipment> Business_Shpiment_List = new ArrayList<>();
                                             JSONArray Business_shipment = booking.getJSONArray("shipments");
                                             for (int k = 0; k < Business_shipment.length(); k++) {
@@ -333,10 +338,21 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                                 CO.setPromocode_type(Customer_order.getString("promocode_type"));
                                             else
                                                 CO.setPromocode_type("NO CODE");
+
                                             if (Customer_order.getString("promocode_amount") != null)
                                                 CO.setPromocode_amount(Customer_order.getString("promocode_amount"));
                                             else
                                                 CO.setPromocode_amount("0");
+
+                                            if (Customer_order.getString("promocode_msg") != null)
+                                                CO.setPromocode_msg(Customer_order.getString("promocode_msg"));
+                                            else
+                                                CO.setPromocode_msg("");
+
+                                            if (Customer_order.getString("promocode_code") != null)
+                                                CO.setPromocode_code(Customer_order.getString("promocode_code"));
+                                            else
+                                                CO.setPromocode_code("");
 
                                             ArrayList<Customer_shipment> Customer_Shpiment_List = new ArrayList<>();
                                             JSONArray Customer_shipment = booking.getJSONArray("shipments");

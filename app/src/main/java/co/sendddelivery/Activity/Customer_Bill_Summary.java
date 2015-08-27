@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import co.sendddelivery.R;
 
@@ -44,6 +45,16 @@ public class Customer_Bill_Summary extends Activity {
             tvDiscountAmt.setText("0");
             tvCode.setText("No Code");
             tvCodeValue.setText("0");
+
+        }
+        if(!getIntent().getStringExtra("promocode_msg").equals("")){
+            Toast.makeText(Customer_Bill_Summary.this,getIntent().getStringExtra("promocode_msg"),Toast.LENGTH_LONG).show();
+        }
+        if(getIntent().getStringExtra("promocode_code") != null) {
+            tvCode.setText(getIntent().getStringExtra("promocode_code"));
+        }else{
+            tvCode.setText(getIntent().getStringExtra("No Code"));
+
         }
         tvDiscountAmt.setText(String.valueOf(DiscountAmount));
         tvTotalPrice.setText(String.valueOf(getIntent().getFloatExtra("TotalPrice", 0)));

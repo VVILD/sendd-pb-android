@@ -4,6 +4,16 @@ import java.util.ArrayList;
 
 public class AllOrders {
     private String Order_name;
+    private String Locality;
+
+    public String getLocality() {
+        return Locality;
+    }
+
+    public void setLocality(String locality) {
+        Locality = locality;
+    }
+
     private String PickupTime;
     private Boolean isBusiness;
     private Customer_Order CO;
