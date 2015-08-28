@@ -230,8 +230,12 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                     allOrders.add(allorders);
                 }
             } else {
-                allorders.setLocality(Pending_Orders_List.get(i).getCustomer_shipment().get(i).getDrop_address().getDrop_address_flat_no() + Pending_Orders_List.get(i).getCustomer_shipment().get(i).getDrop_address().getDrop_address_locality());
-                allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
+                try {
+                    allorders.setLocality(Pending_Orders_List.get(i).getCustomer_Order().getFlat_no() +" "+ Pending_Orders_List.get(i).getCustomer_Order().getAddress());
+                }catch (IndexOutOfBoundsException | NullPointerException e){
+                    allorders.setLocality("");
+                }
+                    allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
                 allorders.setCS(Pending_Orders_List.get(i).getCustomer_shipment());
                 allorders.setOrder_name(Pending_Orders_List.get(i).getCustomer_Order().getName());
                 Date date = format.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());

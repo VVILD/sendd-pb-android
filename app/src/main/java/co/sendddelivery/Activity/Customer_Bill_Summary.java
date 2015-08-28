@@ -56,9 +56,15 @@ public class Customer_Bill_Summary extends Activity {
             tvCode.setText(getIntent().getStringExtra("No Code"));
 
         }
+        if(totalPriceAfterDiscount<0){
+            FinalAmount.setText("0");
+
+        }else{
+            FinalAmount.setText(String.valueOf(totalPriceAfterDiscount));
+
+        }
         tvDiscountAmt.setText(String.valueOf(DiscountAmount));
         tvTotalPrice.setText(String.valueOf(getIntent().getFloatExtra("TotalPrice", 0)));
-        FinalAmount.setText(String.valueOf(totalPriceAfterDiscount));
         Log.i("ptype", getIntent().getStringExtra("promocode_type"));
         Log.i("pamount", getIntent().getStringExtra("promocode_amount"));
         Log.i("total", String.valueOf(getIntent().getFloatExtra("TotalPrice", 0)));
