@@ -2,9 +2,12 @@ package co.sendddelivery.Activity;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -94,12 +97,28 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mUtils.setvalue("PhoneNumber", "");
-                mUtils.setvalue("LoggedIn", "No");
-                Intent i = new Intent(getApplicationContext(), Activity_Login.class);
-                startActivity(i);
-                Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                finish();
+                new AlertDialog.Builder(Activity_Orders.this)
+                        .setTitle("Confirm")
+                        .setMessage("Are you sure you want to logout?")
+                        .setCancelable(false)
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                                mUtils.setvalue("PhoneNumber", "");
+                                mUtils.setvalue("LoggedIn", "No");
+                                Intent i = new Intent(getApplicationContext(), Activity_Login.class);
+                                startActivity(i);
+                                Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+
             }
         });
 
@@ -164,7 +183,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                 convertView = inflater.inflate(R.layout.list_item_orders_list, parent, false);
                 pendingorders_holder.Order_Name = (TextView) convertView.findViewById(R.id.Order_Name);
                 pendingorders_holder.PickupTime = (TextView) convertView.findViewById(R.id.PickupTime);
-                pendingorders_holder.Locality = (TextView)convertView.findViewById(R.id.Locality);
+                pendingorders_holder.Locality = (TextView) convertView.findViewById(R.id.Locality);
                 convertView.setTag(pendingorders_holder);
             } else {
                 pendingorders_holder = (PendingOrders_holder) convertView.getTag();
@@ -231,11 +250,11 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                 }
             } else {
                 try {
-                    allorders.setLocality(Pending_Orders_List.get(i).getCustomer_Order().getFlat_no() +" "+ Pending_Orders_List.get(i).getCustomer_Order().getAddress());
-                }catch (IndexOutOfBoundsException | NullPointerException e){
+                    allorders.setLocality(Pending_Orders_List.get(i).getCustomer_Order().getFlat_no() + " " + Pending_Orders_List.get(i).getCustomer_Order().getAddress());
+                } catch (IndexOutOfBoundsException | NullPointerException e) {
                     allorders.setLocality("");
                 }
-                    allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
+                allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
                 allorders.setCS(Pending_Orders_List.get(i).getCustomer_shipment());
                 allorders.setOrder_name(Pending_Orders_List.get(i).getCustomer_Order().getName());
                 Date date = format.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());

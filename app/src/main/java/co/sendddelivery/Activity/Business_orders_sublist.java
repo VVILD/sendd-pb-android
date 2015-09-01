@@ -13,11 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +57,7 @@ public class Business_orders_sublist extends Activity {
     BusinessOrders_Adapter madapter;
     String businessUserName;
     ArrayList<BusinessAllOrders> BAO;
-    Button scanQRCODE,EnterQRCode;
+    Button scanQRCODE,EnterQRCode,detailsButton;
     ArrayList<Pending_Orders> Pending_Orders_List = new ArrayList<>();
     NetworkUtils mnetworkutils = new NetworkUtils(this);
     ProgressDialog mprogress;
@@ -64,21 +67,47 @@ public class Business_orders_sublist extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_business_orders_sublist);
-        TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
-        TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
-        TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
+
         scanQRCODE = (Button) findViewById(R.id.bScan_order);
         EnterQRCode = (Button)findViewById(R.id.bEnter_Code);
+        detailsButton = (Button)findViewById(R.id.detailsButton);
+
         final String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
         final String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
-        phoneLabel.setOnClickListener(new View.OnClickListener() {
+
+        detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                if(BAO.get(0).getBO().getB_contact_mob() != null) {
-                    callIntent.setData(Uri.parse("tel:" + BAO.get(0).getBO().getB_contact_mob()));
-                }
-                startActivity(callIntent);
+
+                final Dialog dialog = new Dialog(Business_orders_sublist.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.dialog_details_business);
+                dialog.show();
+                TextView nameLabel = (TextView) dialog.findViewById(R.id.nameLabel);
+                TextView addressLabel = (TextView) dialog.findViewById(R.id.addressLabel);
+                TextView Pickuptime = (TextView) dialog.findViewById(R.id.pickuptimeLable);
+                TextView phoneLabel = (TextView) dialog.findViewById(R.id.phoneLabel);
+                Button Dismiss = (Button) dialog.findViewById(R.id.Dismiss_dialog);
+                Dismiss.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                phoneLabel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL);
+                        if(BAO.get(0).getBO().getB_contact_mob() != null) {
+                            callIntent.setData(Uri.parse("tel:" + BAO.get(0).getBO().getB_contact_mob()));
+                        }
+                        startActivity(callIntent);
+                    }
+                });
+                Pickuptime.setText(BAO.get(0).getBO().getPickup_time());
+                nameLabel.setText(BAO.get(0).getBO().getB_business_name());
+                addressLabel.setText(BAO.get(0).getBO().getB_address());
+                phoneLabel.setText(BAO.get(0).getBO().getB_contact_mob() + " , " + BAO.get(0).getBO().getB_contact_office());
             }
         });
         final String pendingOrders = getIntent().getStringExtra("PendingOrderList");
@@ -86,11 +115,7 @@ public class Business_orders_sublist extends Activity {
         Gson GS = new Gson();
         mPending_Order_list = Arrays.asList(GS.fromJson(pendingOrders, Pending_Orders[].class));
         BAO = ShowAddressToList();
-        if (BAO.size() != 0) {
-            nameLabel.setText(BAO.get(0).getBO().getB_business_name());
-            addressLabel.setText(BAO.get(0).getBO().getB_address());
-            phoneLabel.setText(BAO.get(0).getBO().getB_contact_mob() + " , " + BAO.get(0).getBO().getB_contact_office());
-        } else {
+        if (BAO.size() == 0) {
             Intent i = new Intent(getApplicationContext(), Activity_Orders.class);
             startActivity(i);
             finish();

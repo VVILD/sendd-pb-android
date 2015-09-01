@@ -8,12 +8,15 @@ import android.os.Message;
 
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.Utils;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class Activity_SplashScreen extends Activity{
     private Handler handler;
     @Override
     protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_splashscreen);
 
         handler = new Handler(new Handler.Callback() {

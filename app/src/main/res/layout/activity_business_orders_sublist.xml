@@ -14,105 +14,29 @@
         android:text="Business Orders"
         android:textSize="18dp" />
 
-
-    <TextView
-        android:id="@+id/nameLabel_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/orderTitle"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Full Name:"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:id="@+id/nameLabel"
+    <Button
+        android:id="@+id/detailsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderTitle"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_toRightOf="@+id/nameLabel_text"
-        android:text="Full Name: Harsh Karanpuria"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/addressLabel_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameLabel"
-        android:layout_marginLeft="15dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Address:"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:background="@color/blue"
+        android:text="Details"
+        android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/addressLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/addressLabel_text"
-        android:text="Address: A-3 35 green fields JVLR andheri east Mumbai 400093"
-        android:textSize="18sp"  />
-
-    <TextView
-        android:id="@+id/phoneLabel_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/addressLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="Ph Number:"
-
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_toRightOf="@+id/phoneLabel_text"
-        android:id="@+id/phoneLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/addressLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="9920899602 "
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/pickuptimeLable_text"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/phoneLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="Time:"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-    <TextView
-        android:layout_toRightOf="@+id/pickuptimeLable_text"
-        android:id="@+id/pickuptimeLable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/phoneLabel"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
-        android:text="1:30 PM "
-        android:textSize="18sp" />
     <TextView
         android:id="@+id/TVone"
-        android:text="--------All Orders--------"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:textStyle="bold"
-        android:textColor="@color/blue"
         android:layout_width="match_parent"
-        android:layout_below="@+id/pickuptimeLable_text"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detailsButton"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="--------All Orders--------"
+        android:textColor="@color/blue"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
     <ListView
         android:id="@+id/businesssubordersListView"
         android:layout_width="match_parent"

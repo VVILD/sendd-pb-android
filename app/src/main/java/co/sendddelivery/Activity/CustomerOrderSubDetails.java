@@ -1,7 +1,9 @@
 package co.sendddelivery.Activity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -43,7 +45,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
     private RadioButton premium, standard, express;
     private TextView currentshipment;
     private TextView DestinationAddress;
-    public String promocode_type, promocode_amount, promocode_msg, promocode_code;
+    public String promocode_type, promocode_amount, promocode_msg="", promocode_code="";
     public float TotalPrice = 0;
 
     @Override
@@ -67,6 +69,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
         Button Cancel = (Button) findViewById(R.id.Cancel);
         Button Submit = (Button) findViewById(R.id.Submit);
         Gson GS = new Gson();
+
         premium.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,9 +85,19 @@ public class CustomerOrderSubDetails extends BaseActivity {
         express.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                calPrice();
+                try {
+                    if (Double.parseDouble(etItemweight.getText().toString()) < 6) {
+                        Toast.makeText(CustomerOrderSubDetails.this, "Weight Should be more than 6 Kgs for double", Toast.LENGTH_LONG).show();
+                        standard.performClick();
+                    } else {
+                        calPrice();
+                    }
+                }catch (NumberFormatException ignored){
+                    standard.performClick();
+                }
             }
         });
+
         if (getIntent().getExtras() != null) {
             final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
             mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
@@ -166,89 +179,104 @@ public class CustomerOrderSubDetails extends BaseActivity {
         Cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
-                CustomerPatch cp = new CustomerPatch();
-                cp.setStatus("CA");
-                mnetworkutils = new NetworkUtils(CustomerOrderSubDetails.this);
-                mprogress = new ProgressDialog(CustomerOrderSubDetails.this);
-                mprogress.setMessage("Please wait...");
-                mprogress.setCancelable(false);
-                mprogress.setIndeterminate(true);
-                if (mnetworkutils.isnetconnected()) {
-                    mprogress.show();
-                    mnetworkutils.getapi().updateCustomer(mCustomer_Shipment.get(counter).getReal_tracking_no(), cp, new Callback<CustomerPatch>() {
-                                @Override
-                                public void success(CustomerPatch response, Response response1) {
-                                    if (mprogress.isShowing()) {
-                                        mprogress.dismiss();
-                                    }
-                                    shipmentnumber++;
-                                    counter++;
-                                    if (counter < mCustomer_Shipment.size()) {
-                                        EnterQrcode.setText("Enter QR Code");
-                                        QrScan.setText("Scan QR Code");
-                                        flat_no = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no();
-                                        locality = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality();
-                                        city = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city();
-                                        state = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state();
-                                        country = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country();
-                                        pincode = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode();
-                                        pk = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pk();
-                                        d_name = mCustomer_Shipment.get(counter).getDrop_name();
-                                        d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
-                                        currentshipment.setText("Shipment number " + shipmentnumber);
-                                        DestinationAddress.setText(mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode());
-                                        if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
-                                            etItemName.setText(mCustomer_Shipment.get(counter).getItem_name());
-                                        } else {
-                                            etItemName.setText("");
-                                        }
-                                        if (!mCustomer_Shipment.get(counter).getPrice().equals("null")) {
-                                            etItemPrice.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
+                new AlertDialog.Builder(CustomerOrderSubDetails.this)
+                        .setTitle("Confirm")
+                        .setMessage("Are you sure you want to Cancel?")
+                        .setCancelable(false)
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
+                                CustomerPatch cp = new CustomerPatch();
+                                cp.setStatus("CA");
+                                mnetworkutils = new NetworkUtils(CustomerOrderSubDetails.this);
+                                mprogress = new ProgressDialog(CustomerOrderSubDetails.this);
+                                mprogress.setMessage("Please wait...");
+                                mprogress.setCancelable(false);
+                                mprogress.setIndeterminate(true);
+                                if (mnetworkutils.isnetconnected()) {
+                                    mprogress.show();
+                                    mnetworkutils.getapi().updateCustomer(mCustomer_Shipment.get(counter).getReal_tracking_no(), cp, new Callback<CustomerPatch>() {
+                                                @Override
+                                                public void success(CustomerPatch response, Response response1) {
+                                                    if (mprogress.isShowing()) {
+                                                        mprogress.dismiss();
+                                                    }
+                                                    shipmentnumber++;
+                                                    counter++;
+                                                    if (counter < mCustomer_Shipment.size()) {
+                                                        EnterQrcode.setText("Enter QR Code");
+                                                        QrScan.setText("Scan QR Code");
+                                                        flat_no = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no();
+                                                        locality = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality();
+                                                        city = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city();
+                                                        state = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state();
+                                                        country = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country();
+                                                        pincode = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode();
+                                                        pk = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pk();
+                                                        d_name = mCustomer_Shipment.get(counter).getDrop_name();
+                                                        d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
+                                                        currentshipment.setText("Shipment number " + shipmentnumber);
+                                                        DestinationAddress.setText(mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode());
+                                                        if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
+                                                            etItemName.setText(mCustomer_Shipment.get(counter).getItem_name());
+                                                        } else {
+                                                            etItemName.setText("");
+                                                        }
+                                                        if (!mCustomer_Shipment.get(counter).getPrice().equals("null")) {
+                                                            etItemPrice.setText(mCustomer_Shipment.get(counter).getCost_of_courier());
 
-                                        } else {
-                                            etItemPrice.setText("");
-                                        }
-                                        if (!mCustomer_Shipment.get(counter).getWeight().equals("null")) {
-                                            etItemweight.setText(mCustomer_Shipment.get(counter).getWeight());
+                                                        } else {
+                                                            etItemPrice.setText("");
+                                                        }
+                                                        if (!mCustomer_Shipment.get(counter).getWeight().equals("null")) {
+                                                            etItemweight.setText(mCustomer_Shipment.get(counter).getWeight());
 
-                                        } else {
-                                            etItemweight.setText("");
-                                        }
-                                        if (!mCustomer_Shipment.get(counter).getCost_of_courier().equals("null")) {
-                                            etItemValue.setText(mCustomer_Shipment.get(counter).getPrice());
+                                                        } else {
+                                                            etItemweight.setText("");
+                                                        }
+                                                        if (!mCustomer_Shipment.get(counter).getCost_of_courier().equals("null")) {
+                                                            etItemValue.setText(mCustomer_Shipment.get(counter).getPrice());
 
-                                        } else {
-                                            etItemValue.setText("");
-                                        }
-                                    } else {
-                                        Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
-                                        i.putExtra("promocode_type", promocode_type);
-                                        i.putExtra("promocode_amount", promocode_amount);
-                                        i.putExtra("TotalPrice", TotalPrice);
-                                        i.putExtra("promocode_code",promocode_code);
-                                        i.putExtra("promocode_msg",promocode_msg);
-                                        startActivity(i);
-                                        finish();
-                                        Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
-                                        CustomerOrderSubDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                                    }
+                                                        } else {
+                                                            etItemValue.setText("");
+                                                        }
+                                                    } else {
+                                                        Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
+                                                        i.putExtra("promocode_type", promocode_type);
+                                                        i.putExtra("promocode_amount", promocode_amount);
+                                                        i.putExtra("TotalPrice", TotalPrice);
+                                                        i.putExtra("promocode_code",promocode_code);
+                                                        i.putExtra("promocode_msg",promocode_msg);
+                                                        startActivity(i);
+                                                        finish();
+                                                        Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
+                                                        CustomerOrderSubDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                                                    }
 
-                                }
+                                                }
 
-                                @Override
-                                public void failure(RetrofitError error) {
-                                    if (mprogress.isShowing()) {
-                                        mprogress.dismiss();
-                                    }
-                                    Toast.makeText(CustomerOrderSubDetails.this, "Order did not process. Please check again", Toast.LENGTH_LONG).show();
-                                    Log.i("Error:->", error.toString());
+                                                @Override
+                                                public void failure(RetrofitError error) {
+                                                    if (mprogress.isShowing()) {
+                                                        mprogress.dismiss();
+                                                    }
+                                                    Toast.makeText(CustomerOrderSubDetails.this, "Order did not process. Please check again", Toast.LENGTH_LONG).show();
+                                                    Log.i("Error:->", error.toString());
+                                                }
+                                            }
+                                    );
+                                } else {
+                                    Toast.makeText(CustomerOrderSubDetails.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
                                 }
                             }
-                    );
-                } else {
-                    Toast.makeText(CustomerOrderSubDetails.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
-                }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+
             }
         });
         DestinationAddress.setOnClickListener(new View.OnClickListener() {
@@ -410,9 +438,9 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                         mprogress.dismiss();
                                                                                     }
                                                                                     Toast.makeText(CustomerOrderSubDetails.this, "Order did not process. Please check Barcode", Toast.LENGTH_LONG).show();
-                                                                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                                                                    Log.v("failure", json);
-                                                                                    Log.i("asdf", error.getUrl());
+//                                                                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+//                                                                                    Log.v("failure", json);
+//                                                                                    Log.i("asdf", error.getUrl());
                                                                                 }
                                                                             }
 
@@ -538,8 +566,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
             etItemValue.setText(String.valueOf(priceCalculated));
 
         } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-            Toast.makeText(CustomerOrderSubDetails.this, "Enter Correct Values", Toast.LENGTH_LONG).show();
-        }
+         }
     }
 
     @Override

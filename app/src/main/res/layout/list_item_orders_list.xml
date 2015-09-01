@@ -7,16 +7,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:background="@color/white"
-        android:descendantFocusability="blocksDescendants">
+        android:descendantFocusability="blocksDescendants"
+        android:minHeight="100dp">
 
         <TextView
             android:id="@+id/PickupTime"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:background="@color/blue"
             android:gravity="center"
@@ -42,6 +44,7 @@
             android:layout_alignLeft="@+id/Order_Name"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:layout_below="@+id/Order_Name"
             android:layout_marginRight="10dp"
             android:gravity="right"
             android:text="Powai"

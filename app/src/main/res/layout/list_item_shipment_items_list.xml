@@ -9,29 +9,29 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@color/white"
-        android:padding="10dp"
-        android:descendantFocusability="blocksDescendants">
+        android:descendantFocusability="blocksDescendants"
+        android:padding="10dp">
 
-    <TextView
+        <TextView
 
-        android:layout_width="250dp"
-        android:layout_height="match_parent"
-        android:text="S12355D433"
-        android:id="@+id/tvshipmentnumber"
-        android:textSize="25dp"
-        android:gravity="center"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-       />
-    <ImageView
-        android:text="10:00 AM"
-        android:textSize="20sp"
-        android:src="@drawable/box_sample_icon"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/ivshipmentImage" />
-</RelativeLayout>
+            android:id="@+id/tvshipmentnumber"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/ivshipmentImage"
+            android:gravity="left|center_vertical"
+
+            android:text="S12355D433"
+            android:textSize="25dp" />
+
+        <ImageView
+            android:id="@+id/ivshipmentImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/box_sample_icon"
+            android:text="10:00 AM"
+            android:textSize="20sp" />
     </RelativeLayout>
+</RelativeLayout>
