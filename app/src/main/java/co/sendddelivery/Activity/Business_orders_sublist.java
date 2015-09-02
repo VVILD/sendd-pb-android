@@ -364,7 +364,7 @@ public class Business_orders_sublist extends Activity {
             if (mPending_Order_list.get(i).getIsBusiness()) {
                 if (mPending_Order_list.get(i).getBusiness_Order().getB_username().equals(businessUserName)) {
                     if (!mPending_Order_list.get(i).getBusiness_Order().getIsComplete()) {
-                        allorders.setOrder_name("Order-" + mPending_Order_list.get(i).getBusiness_Order().getOrder_id() + "   " + mPending_Order_list.get(i).getBusiness_Order().getName());
+                        allorders.setOrder_name("DATE:"+mPending_Order_list.get(i).getBusiness_Order().getOrderdate()+"||"+"Order-" + mPending_Order_list.get(i).getBusiness_Order().getOrder_id() + "|| NAME:" + mPending_Order_list.get(i).getBusiness_Order().getName());
                         allorders.setBO(mPending_Order_list.get(i).getBusiness_Order());
                         allorders.setBS(mPending_Order_list.get(i).getBusiness_Shipment());
                         allorders.setPendingOrderId(pendingorderId);

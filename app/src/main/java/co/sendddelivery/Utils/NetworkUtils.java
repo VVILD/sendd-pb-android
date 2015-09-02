@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
+import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.client.ApacheClient;
 import retrofit.converter.GsonConverter;
@@ -58,10 +59,10 @@ public class NetworkUtils {
         RestAdapter madapter = new RestAdapter.Builder()
                 .setEndpoint(NetworkUtils.END_POINT)
                 .setConverter(new GsonConverter(gson))
+                .setErrorHandler(ErrorHandler.DEFAULT)
                 .setClient(new ApacheClient())
                 .build();
-        NetworkCalls mnetworkcall = madapter.create(NetworkCalls.class);
-        return mnetworkcall;
+        return madapter.create(NetworkCalls.class);
     }
 
     private static class DateDeserializer implements JsonDeserializer<Date> {

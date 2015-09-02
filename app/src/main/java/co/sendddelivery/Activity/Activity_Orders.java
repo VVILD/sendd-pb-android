@@ -63,6 +63,8 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
     private ProgressDialog mprogress;
     private Handler handler;
     private SwipeRefreshLayout swipeRefreshLayout;
+    DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
+    DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -229,7 +231,6 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
     }
 
     public ArrayList<AllOrders> ShowAddressToList() throws ParseException {
-        DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
         allOrders = new ArrayList<>();
         for (int i = 0; i < Pending_Orders_List.size(); i++) {
             AllOrders allorders = new AllOrders();
@@ -329,6 +330,12 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                             BO.setPhone(Business_order.getString("phone"));
                                             BO.setPickup_time(Business_order.getString("pickup_time"));
                                             BO.setPincode(Business_order.getString("pincode"));
+
+                                            Date date = format2.parse(Business_order.getString("book_time"));
+                                            String timeStamp = new SimpleDateFormat("dd-MMM", Locale.getDefault()).format(date);
+
+                                            BO.setOrderdate(timeStamp);
+
                                             BO.setIsComplete(false);
                                             ArrayList<Business_Shipment> Business_Shpiment_List = new ArrayList<>();
                                             JSONArray Business_shipment = booking.getJSONArray("shipments");
@@ -411,7 +418,9 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                }
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 ListView lv_Saved_Address = (ListView) findViewById(R.id.allordersListView);
                                 try {
                                     madapter = new PendingOrders_Adapter(Activity_Orders.this, R.layout.list_item_orders_list, ShowAddressToList());

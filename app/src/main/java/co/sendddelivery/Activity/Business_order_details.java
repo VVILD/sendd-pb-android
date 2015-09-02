@@ -176,7 +176,7 @@ public class Business_order_details extends Activity {
                                                     if (mprogress.isShowing()) {
                                                         mprogress.dismiss();
                                                     }
-                                                    Log.i("Error:->", error.toString());
+                                                    Toast.makeText(Business_order_details.this, "CANCEL did not process", Toast.LENGTH_LONG).show();
                                                 }
                                             }
 
@@ -274,8 +274,7 @@ public class Business_order_details extends Activity {
                                             if (mprogress.isShowing()) {
                                                 mprogress.dismiss();
                                             }
-                                            String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                            Log.v("failure", json);
+                                            Toast.makeText(Business_order_details.this, "Order did not process. Please check Barcode", Toast.LENGTH_LONG).show();
                                         }
                                     }
 

@@ -22,6 +22,16 @@ public class Business_Order implements Serializable {
     private String phone;
     private String pickup_time;
     private String pincode;
+
+    public String getOrderdate() {
+        return orderdate;
+    }
+
+    public void setOrderdate(String orderdate) {
+        this.orderdate = orderdate;
+    }
+
+    private String orderdate;
     private Boolean isComplete;
 
     public String getOrder_id() {
