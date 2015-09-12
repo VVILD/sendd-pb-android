@@ -8,16 +8,27 @@ import android.os.Message;
 
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.Utils;
+
 import com.crashlytics.android.Crashlytics;
+
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
+import java.util.Date;
+
 import io.fabric.sdk.android.Fabric;
 
-public class Activity_SplashScreen extends Activity{
+public class Activity_SplashScreen extends Activity {
     private Handler handler;
+
     @Override
-    protected  void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_splashscreen);
+
 
         handler = new Handler(new Handler.Callback() {
             @Override
@@ -51,6 +62,7 @@ public class Activity_SplashScreen extends Activity{
         };
         timer.start();
     }
+
     protected void onPause() {
         super.onPause();
         finish();

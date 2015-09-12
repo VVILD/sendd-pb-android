@@ -16,11 +16,12 @@ import com.google.gson.Gson;
 import java.util.Arrays;
 import java.util.List;
 
+import co.sendddelivery.Databases.DB_PreviousOrders;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
+import co.sendddelivery.GetterandSetter.PickedupOrders;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
-import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -31,24 +32,20 @@ public class Business_order_details_fromBarcode extends Activity {
     Button QrScan;
     int counter = 0;
     NetworkUtils mnetworkutils;
-    Utils mUtils;
-    ProgressDialog mprogress;
-    TextView totalshipment, currentshipment;
+     ProgressDialog mprogress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_businesssubdeatails);
-        mUtils = new Utils(this);
-        final String BUsiness_shipment_object = getIntent().getStringExtra("Business_Shipment");
-        final Gson GS = new Gson();
-        mBusiness_Shipment = Arrays.asList(GS.fromJson(BUsiness_shipment_object, Business_Shipment[].class));
-        totalshipment = (TextView) findViewById(R.id.TotalOrders);
-        currentshipment = (TextView) findViewById(R.id.CurrentShipment);
         final EditText etItemName = (EditText) findViewById(R.id.etItemName);
         final EditText etItemValue = (EditText) findViewById(R.id.etItemValue);
         final EditText etItemweight = (EditText) findViewById(R.id.etItemweight);
         final EditText etItemPrice = (EditText) findViewById(R.id.etItemPrice);
+        final String BUsiness_shipment_object = getIntent().getStringExtra("Business_Shipment");
+        final Gson GS = new Gson();
+        TextView totalshipment = (TextView) findViewById(R.id.TotalOrders);
+        mBusiness_Shipment = Arrays.asList(GS.fromJson(BUsiness_shipment_object, Business_Shipment[].class));
         totalshipment.setText("Total number of shipments = " + mBusiness_Shipment.size());
         QrScan = (Button) findViewById(R.id.QrCode);
         Button Cancel = (Button) findViewById(R.id.Cancel);
@@ -57,7 +54,6 @@ public class Business_order_details_fromBarcode extends Activity {
         Cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 BusinessPatch Bp = new BusinessPatch();
                 Bp.setStatus("CA");
                 mnetworkutils = new NetworkUtils(Business_order_details_fromBarcode.this);
@@ -73,6 +69,14 @@ public class Business_order_details_fromBarcode extends Activity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
+                                    PickedupOrders po = new PickedupOrders();
+                                    po.setName(getIntent().getStringExtra("Business_name"));
+                                    po.setScannedorders(0);
+                                    po.setBusinessusername(getIntent().getStringExtra("Business_username"));
+                                    po.setCancelledorders(1);
+                                    po.setPickeduporders(0);
+                                    DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                    db_previousOrders.AddToDB(po);
 
                                     Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
                                     String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
@@ -118,6 +122,17 @@ public class Business_order_details_fromBarcode extends Activity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
+                                    PickedupOrders po = new PickedupOrders();
+                                    po.setName(getIntent().getStringExtra("Business_name"));
+                                    po.setScannedorders(0);
+                                    po.setBusinessusername(getIntent().getStringExtra("Business_username"));
+                                    po.setCancelledorders(0);
+                                    po.setPickeduporders(1);
+
+
+                                    DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                    db_previousOrders.AddToDB(po);
+
                                     Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
                                     String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
                                     String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");

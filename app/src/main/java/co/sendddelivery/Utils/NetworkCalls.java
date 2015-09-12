@@ -1,14 +1,20 @@
 package co.sendddelivery.Utils;
 
+import java.util.ArrayList;
+
+import co.sendddelivery.GetterandSetter.BarcodeAllotment;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
 import co.sendddelivery.GetterandSetter.CustomerPatch;
 import co.sendddelivery.GetterandSetter.LocationParameters;
 import co.sendddelivery.GetterandSetter.Login;
+import co.sendddelivery.GetterandSetter.allotment_list;
+import co.sendddelivery.GetterandSetter.business_is_completePatch;
 import retrofit.Callback;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Headers;
+import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -40,5 +46,11 @@ public interface NetworkCalls {
 
     @POST("/pb_api/v1/pb_locations/")
     void sendlocation( @Body LocationParameters locationParameters, Callback<Response> customerPatchCallback);
+
+    @PATCH("/bapi/v3/business_patch/{username}/")
+    void closeBusiness(@Path("username") String username,@Body business_is_completePatch is_complete, Callback<Response> responseCallback);
+
+    @PATCH("/bapi/v2/barcode_allotment/")
+    void addbarcodes(@Body BarcodeAllotment objects, Callback<Response> responseCallback);
 
 }

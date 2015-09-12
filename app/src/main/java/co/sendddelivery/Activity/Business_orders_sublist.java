@@ -136,6 +136,7 @@ public class Business_orders_sublist extends Activity {
                 i.putExtra("pendingOrderId", BAO.get(position).getPendingOrderId());
                 i.putExtra("OrderName", BAO.get(position).getOrder_name());
                 i.putExtra("Business_username", ForwardIntent_UserName);
+                i.putExtra("Business_name", BAO.get(position).getBO().getB_business_name());
                 i.putExtra("PendingOrderList", ForwardIntent_POL);
                 startActivity(i);
                 finish();
@@ -251,6 +252,7 @@ public class Business_orders_sublist extends Activity {
                                             String pol = GS.toJson(Pending_Orders_List);
                                             i.putExtra("Business_Shipment", BS);
                                             i.putExtra("Business_username", Pending_Orders_List.get(0).getBusiness_Order().getB_username());
+                                            i.putExtra("Business_name", Pending_Orders_List.get(0).getBusiness_Order().getB_business_name());
                                             i.putExtra("PendingOrderList", pol);
                                             startActivity(i);
                                             finish();
@@ -475,6 +477,7 @@ public class Business_orders_sublist extends Activity {
                                     String pol = GS.toJson(Pending_Orders_List);
                                     i.putExtra("Business_Shipment", BS);
                                     i.putExtra("Business_username", Pending_Orders_List.get(0).getBusiness_Order().getB_username());
+                                    i.putExtra("Business_name", Pending_Orders_List.get(0).getBusiness_Order().getB_business_name());
                                     i.putExtra("PendingOrderList", pol);
                                     startActivity(i);
                                     finish();

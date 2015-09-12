@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include
+    android:id="@+id/toolbar_scanned_orders"
+    layout="@layout/toolbar_scanned_orders" />
+    <TextView
+        android:id="@+id/businessname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar_scanned_orders"
+        android:layout_centerHorizontal="true"
+        android:text="Jupiter"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/addmore"
+        android:padding="5dp"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:background="@color/blue"
+        android:drawableRight="@android:drawable/ic_input_add"
+        android:layout_below="@+id/businessname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add More" />
+
+    <ListView
+        android:id="@+id/prevOrdersList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/FinishScan"
+        android:layout_below="@+id/addmore" />
+
+
+    <Button
+        android:id="@+id/FinishScan"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:text="Finish Scanning" />
+</RelativeLayout>

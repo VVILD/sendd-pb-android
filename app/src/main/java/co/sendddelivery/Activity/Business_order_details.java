@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import co.sendddelivery.Databases.DB_PreviousOrders;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
+import co.sendddelivery.GetterandSetter.PickedupOrders;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import co.sendddelivery.Utils.Utils;
@@ -122,6 +124,16 @@ public class Business_order_details extends Activity {
                                                     if (mprogress.isShowing()) {
                                                         mprogress.dismiss();
                                                     }
+                                                    PickedupOrders po = new PickedupOrders();
+                                                    po.setName(getIntent().getStringExtra("Business_name"));
+                                                    po.setScannedorders(0);
+                                                    po.setBusinessusername(getIntent().getStringExtra("Business_username"));
+                                                    po.setCancelledorders(1);
+                                                    po.setPickeduporders(0);
+
+
+                                                    DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                                    db_previousOrders.AddToDB(po);
                                                     counter++;
                                                     shipmentnumber++;
 
@@ -194,7 +206,6 @@ public class Business_order_details extends Activity {
                         .show();
 
 
-
             }
         });
         Submit.setOnClickListener(new View.OnClickListener() {
@@ -221,7 +232,16 @@ public class Business_order_details extends Activity {
                                             Log.i("response1", String.valueOf(response1.getStatus()));
                                             counter++;
                                             shipmentnumber++;
+                                            PickedupOrders po = new PickedupOrders();
+                                            po.setName(getIntent().getStringExtra("Business_name"));
+                                            po.setScannedorders(0);
+                                            po.setBusinessusername(getIntent().getStringExtra("Business_username"));
+                                            po.setCancelledorders(0);
+                                            po.setPickeduporders(1);
 
+
+                                            DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                            db_previousOrders.AddToDB(po);
                                             if (counter < mBusiness_Shipment.size()) {
                                                 currentshipment.setText("Shipment number " + shipmentnumber);
                                                 if (!mBusiness_Shipment.get(counter).getName().equals("null")) {

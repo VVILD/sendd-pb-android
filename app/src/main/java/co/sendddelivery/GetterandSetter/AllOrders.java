@@ -5,6 +5,31 @@ import java.util.ArrayList;
 public class AllOrders {
     private String Order_name;
     private String Locality;
+    private String NumberofShipments;
+
+    public String getNumberofShipments() {
+        return NumberofShipments;
+    }
+
+    public void setNumberofShipments(String numberofShipments) {
+        NumberofShipments = numberofShipments;
+    }
+
+    private String PickupTime;
+    private Boolean isBusiness;
+    private Customer_Order CO;
+    private ArrayList<Customer_shipment> CS;
+    private String BusinessUserName;
+
+    public String getBusinessName() {
+        return BusinessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        BusinessName = businessName;
+    }
+
+    private String BusinessName;
 
     public String getLocality() {
         return Locality;
@@ -14,11 +39,6 @@ public class AllOrders {
         Locality = locality;
     }
 
-    private String PickupTime;
-    private Boolean isBusiness;
-    private Customer_Order CO;
-    private ArrayList<Customer_shipment>CS;
-    private String BusinessUserName;
 
     public String getBusinessUserName() {
         return BusinessUserName;

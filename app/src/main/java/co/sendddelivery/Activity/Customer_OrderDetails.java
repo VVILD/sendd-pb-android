@@ -78,6 +78,8 @@ public class Customer_OrderDetails extends Activity {
                 i.putExtra("promocode_type",customer_order.getPromocode_type());
                 i.putExtra("promocode_code",customer_order.getPromocode_code());
                 i.putExtra("promocode_msg",customer_order.getPromocode_msg());
+                i.putExtra("custname",customer_order.getName());
+
                 startActivity(i);
                 Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
             }

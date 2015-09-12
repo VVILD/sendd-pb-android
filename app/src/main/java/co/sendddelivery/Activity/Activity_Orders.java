@@ -1,30 +1,37 @@
 package co.sendddelivery.Activity;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,24 +54,28 @@ import co.sendddelivery.GetterandSetter.Customer_Order;
 import co.sendddelivery.GetterandSetter.Customer_shipment;
 import co.sendddelivery.GetterandSetter.Drop_address;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
+import co.sendddelivery.GetterandSetter.business_is_completePatch;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
-public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRefreshListener {
+public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private NetworkUtils mnetworkutils = new NetworkUtils(this);
     private PendingOrders_Adapter madapter;
     private ArrayList<AllOrders> allOrders;
     private ArrayList<Pending_Orders> Pending_Orders_List = new ArrayList<>();
     private Utils mUtils;
+    public static Toolbar toolbar;
     private ProgressDialog mprogress;
     private Handler handler;
     private SwipeRefreshLayout swipeRefreshLayout;
     DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
     DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+    int counter = 0;
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -81,12 +92,27 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_allorders);
         mUtils = new Utils(this);
+
+        final Utils utils = new Utils(Activity_Orders.this);
+        DateTime dt = new DateTime();
+        if (utils.getInt("date") != 0) {
+            if (utils.getInt("date") < dt.getDayOfMonth()) {
+                Utils.ClearPickedUpOrders();
+                utils.setInt("date", dt.getDayOfMonth());
+            }
+        } else {
+           utils.setInt("date", dt.getDayOfMonth());
+        }
+
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         if (!isMyServiceRunning(LocationService.class)) {
             Intent intent = new Intent(this, LocationService.class);
             startService(intent);
         }
+        toolbar = (Toolbar) findViewById(R.id.thankyou_activity);
+        setSupportActionBar(toolbar);
+
         Button closeButton = (Button) findViewById(R.id.closeButton);
         Button refreshbutton = (Button) findViewById(R.id.refreshButton);
 
@@ -129,7 +155,10 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
     public class PendingOrders_holder {
         private TextView Order_Name;
         private TextView Locality;
+        private TextView numberofShipments;
+        private ImageView ScanBarcodes;
         private TextView PickupTime;
+        private CheckBox isComplete;
     }
 
     //Set up Address Adapter
@@ -161,6 +190,20 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         }
 
         @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (address_list.get(position).getIsBusiness()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
         public AllOrders getItem(int position) {
             return super.getItem(position);
         }
@@ -176,13 +219,21 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            PendingOrders_holder pendingorders_holder;
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final PendingOrders_holder pendingorders_holder;
+            int type = getItemViewType(position);
+
             if (convertView == null) {
                 //initialize holder
+                if (type == 0) {
+                    LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.list_item_orders_list, parent, false);
+                } else {
+                    LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.list_item_orders_list_businessc, parent, false);
+                }
                 pendingorders_holder = new PendingOrders_holder();
-                LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item_orders_list, parent, false);
+                pendingorders_holder.numberofShipments = (TextView) convertView.findViewById(R.id.number_of_shipments);
                 pendingorders_holder.Order_Name = (TextView) convertView.findViewById(R.id.Order_Name);
                 pendingorders_holder.PickupTime = (TextView) convertView.findViewById(R.id.PickupTime);
                 pendingorders_holder.Locality = (TextView) convertView.findViewById(R.id.Locality);
@@ -190,6 +241,81 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
             } else {
                 pendingorders_holder = (PendingOrders_holder) convertView.getTag();
             }
+            if (type == 1) {
+                pendingorders_holder.isComplete = (CheckBox) convertView.findViewById(R.id.isBusinessComplete);
+                pendingorders_holder.ScanBarcodes = (ImageView) convertView.findViewById(R.id.ScanBarcode);
+                pendingorders_holder.ScanBarcodes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(getApplicationContext(), Activity_business_scanned_orders.class);
+                        i.putExtra("businessusername",address_list.get(position).getBusinessUserName());
+                        i.putExtra("Business_name",address_list.get(position).getBusinessName());
+                        startActivity(i);
+                    }
+                });
+                pendingorders_holder.isComplete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        if (b) {
+                            new AlertDialog.Builder(Activity_Orders.this)
+                                    .setTitle("Confirm")
+                                    .setMessage("Are you sure you want to Finish" + address_list.get(position).getBusinessUserName() + "business")
+                                    .setCancelable(false)
+                                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            business_is_completePatch bis = new business_is_completePatch();
+                                        bis.setIs_complete(true);
+                                        mnetworkutils = new NetworkUtils(Activity_Orders.this);
+                                        mprogress = new ProgressDialog(Activity_Orders.this);
+                                        mprogress.setMessage("Please wait...");
+                                        mprogress.setCancelable(false);
+                                        mprogress.setIndeterminate(true);
+
+                                        if (mnetworkutils.isnetconnected()) {
+                                            mprogress.show();
+                                            mnetworkutils.getapi().closeBusiness(address_list.get(position).getBusinessUserName(), bis, new Callback<Response>() {
+                                                        @Override
+                                                        public void success(Response response, Response response1) {
+                                                            if (mprogress.isShowing()) {
+                                                                mprogress.dismiss();
+                                                            }
+
+                                                            updateOrders();
+                                                        }
+
+                                                        @Override
+                                                        public void failure(RetrofitError error) {
+                                                            if (mprogress.isShowing()) {
+                                                                mprogress.dismiss();
+                                                            }
+                                                            String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                                            Log.v("failure", error.toString());
+                                                            Log.i("failure:URL:", error.getUrl());
+                                                            Log.i("Fail", error.getSuccessType().toString());
+                                                            Log.i("Fail", json);
+                                                            Log.i("Fail", error.getMessage());
+
+                                                        }
+                                                    }
+                                            );
+                                        }
+
+                                    }
+                                    })
+                                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                            pendingorders_holder.isComplete.setChecked(false);
+                                        }
+                                    })
+                                    .show();
+                        }
+                    }
+                });
+
+            }
+
             //setup list objects
             if (address_list.get(position).getIsBusiness()) {
                 pendingorders_holder.PickupTime.setBackgroundColor(getResources().getColor(R.color.lightgreen));
@@ -198,6 +324,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
 
             }
             //Log.i("address_list.get(position).getLocality()",address_list.get(position).getLocality());
+            pendingorders_holder.numberofShipments.setText(address_list.get(position).getNumberofShipments());
             pendingorders_holder.Locality.setText(address_list.get(position).getLocality());
             pendingorders_holder.Order_Name.setText(address_list.get(position).getOrder_name());
             pendingorders_holder.PickupTime.setText(address_list.get(position).getPickupTime());
@@ -208,6 +335,18 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
 
     public void onResume() {
         super.onResume();
+        mUtils = new Utils(this);
+
+        final Utils utils = new Utils(Activity_Orders.this);
+        DateTime dt = new DateTime();
+        if (utils.getInt("date") != 0) {
+            if (utils.getInt("date") < dt.getDayOfMonth()) {
+                Utils.ClearPickedUpOrders();
+                utils.setInt("date", dt.getDayOfMonth());
+            }
+        } else {
+            utils.setInt("date", dt.getDayOfMonth());
+        }
         handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
@@ -230,24 +369,62 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
         timer.start();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.previousShipment:
+                Intent i = new Intent(getApplicationContext(), Activity_Pickedup_orders.class);
+                startActivity(i);
+                overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public ArrayList<AllOrders> ShowAddressToList() throws ParseException {
         allOrders = new ArrayList<>();
         for (int i = 0; i < Pending_Orders_List.size(); i++) {
+
             AllOrders allorders = new AllOrders();
             Boolean flag = true;
+            int j = 0;
             if (Pending_Orders_List.get(i).getIsBusiness()) {
                 for (int l = 0; l < allOrders.size(); l++) {
+                    // Log.i("Count" + Pending_Orders_List.get(i).getBusiness_Order().getB_business_name(), String.valueOf(counter++));
                     flag = !allOrders.get(l).getOrder_name().equals(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
+
                 }
                 if (flag) {
+                    for (int k = 0; k < Pending_Orders_List.size(); k++) {
+                        if (Pending_Orders_List.get(k).getIsBusiness()) {
+                            if (Pending_Orders_List.get(i).getBusiness_Order().getB_username().equals(Pending_Orders_List.get(k).getBusiness_Order().getB_username())) {
+                                if(!Pending_Orders_List.get(k).getBusiness_Order().getOrder_id().equals("null")) {
+                                    counter++;
+                                }
+                                Log.i("counter=", String.valueOf(counter));
+                            }
+                        }
+                    }
+                    allorders.setNumberofShipments(String.valueOf(counter));
                     allorders.setLocality(Pending_Orders_List.get(i).getBusiness_Order().getB_address());
                     allorders.setBusinessUserName(Pending_Orders_List.get(i).getBusiness_Order().getB_username());
                     allorders.setOrder_name(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
                     Date date = format.parse(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
-                    String timeStamp = new SimpleDateFormat("HH:mm a", Locale.getDefault()).format(date);
+                    String timeStamp = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
                     allorders.setPickupTime(timeStamp);
                     allorders.setIsBusiness(true);
+                    allorders.setBusinessName(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
                     allOrders.add(allorders);
+                    counter = 0;
+
                 }
             } else {
                 try {
@@ -255,11 +432,12 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                 } catch (IndexOutOfBoundsException | NullPointerException e) {
                     allorders.setLocality("");
                 }
+                allorders.setNumberofShipments(String.valueOf(Pending_Orders_List.get(i).getCustomer_shipment().size()));
                 allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
                 allorders.setCS(Pending_Orders_List.get(i).getCustomer_shipment());
                 allorders.setOrder_name(Pending_Orders_List.get(i).getCustomer_Order().getName());
                 Date date = format.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());
-                String timeStamp = new SimpleDateFormat("HH:mm a", Locale.getDefault()).format(date);
+                String timeStamp = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
                 allorders.setPickupTime(timeStamp);
                 allorders.setIsBusiness(false);
                 allOrders.add(allorders);
@@ -283,8 +461,6 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                 mnetworkutils.getapi().getOrders(utils.getvalue("PhoneNumber"), new Callback<Response>() {
                             @Override
                             public void success(Response response, Response response2) {
-                                mprogress.dismiss();
-                                swipeRefreshLayout.setRefreshing(false);
 
                                 BufferedReader reader;
                                 StringBuilder sb = new StringBuilder();
@@ -331,27 +507,32 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                             BO.setPickup_time(Business_order.getString("pickup_time"));
                                             BO.setPincode(Business_order.getString("pincode"));
 
-                                            Date date = format2.parse(Business_order.getString("book_time"));
-                                            String timeStamp = new SimpleDateFormat("dd-MMM", Locale.getDefault()).format(date);
+                                            try {
+                                                Date date = format2.parse(Business_order.getString("book_time"));
+                                                String timeStamp = new SimpleDateFormat("dd-MMM", Locale.getDefault()).format(date);
+                                                BO.setOrderdate(timeStamp);
+                                            } catch (ParseException e) {
 
-                                            BO.setOrderdate(timeStamp);
-
+                                            }
                                             BO.setIsComplete(false);
-                                            ArrayList<Business_Shipment> Business_Shpiment_List = new ArrayList<>();
-                                            JSONArray Business_shipment = booking.getJSONArray("shipments");
-                                            for (int k = 0; k < Business_shipment.length(); k++) {
-                                                Business_Shipment BS = new Business_Shipment();
-                                                BS.setName(Business_shipment.getJSONObject(k).getString("name"));
-                                                BS.setPrice(Business_shipment.getJSONObject(k).getString("price"));
-                                                BS.setQuantity(Business_shipment.getJSONObject(k).getString("quantity"));
-                                                BS.setReal_tracking_no(Business_shipment.getJSONObject(k).getString("real_tracking_no"));
-                                                BS.setShipping_cost(Business_shipment.getJSONObject(k).getString("shipping_cost"));
-                                                BS.setSku(Business_shipment.getJSONObject(k).getString("sku"));
-                                                BS.setWeight(Business_shipment.getJSONObject(k).getString("weight"));
-                                                Business_Shpiment_List.add(BS);
+                                            if(booking.getJSONArray("shipments") != null) {
+                                                ArrayList<Business_Shipment> Business_Shpiment_List = new ArrayList<>();
+                                                JSONArray Business_shipment = booking.getJSONArray("shipments");
+                                                for (int k = 0; k < Business_shipment.length(); k++) {
+                                                    Business_Shipment BS = new Business_Shipment();
+                                                    BS.setName(Business_shipment.getJSONObject(k).getString("name"));
+                                                    BS.setPrice(Business_shipment.getJSONObject(k).getString("price"));
+                                                    BS.setQuantity(Business_shipment.getJSONObject(k).getString("quantity"));
+                                                    BS.setReal_tracking_no(Business_shipment.getJSONObject(k).getString("real_tracking_no"));
+                                                    BS.setShipping_cost(Business_shipment.getJSONObject(k).getString("shipping_cost"));
+                                                    BS.setSku(Business_shipment.getJSONObject(k).getString("sku"));
+                                                    BS.setWeight(Business_shipment.getJSONObject(k).getString("weight"));
+                                                    Business_Shpiment_List.add(BS);
+                                                }
+
+                                                PO.setBusiness_Shipment(Business_Shpiment_List);
                                             }
                                             PO.setBusiness_Order(BO);
-                                            PO.setBusiness_Shipment(Business_Shpiment_List);
                                             Pending_Orders_List.add(PO);
                                         } else {
                                             PO.setIsBusiness(false);
@@ -418,9 +599,7 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
+                                }
                                 ListView lv_Saved_Address = (ListView) findViewById(R.id.allordersListView);
                                 try {
                                     madapter = new PendingOrders_Adapter(Activity_Orders.this, R.layout.list_item_orders_list, ShowAddressToList());
@@ -428,19 +607,21 @@ public class Activity_Orders extends Activity implements SwipeRefreshLayout.OnRe
                                     e.printStackTrace();
                                 }
                                 lv_Saved_Address.setAdapter(madapter);
-
+                                mprogress.dismiss();
+                                swipeRefreshLayout.setRefreshing(false);
                                 lv_Saved_Address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                                         if (allOrders.get(position).getIsBusiness()) {
-                                            Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
-                                            Gson GS = new Gson();
-                                            String PO = GS.toJson(Pending_Orders_List);
-                                            i.putExtra("Business_username", allOrders.get(position).getBusinessUserName());
-                                            i.putExtra("PendingOrderList", PO);
-                                            startActivity(i);
-                                            Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-
+                                            if(Integer.parseInt(allOrders.get(position).getNumberofShipments()) != 0) {
+                                                Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
+                                                Gson GS = new Gson();
+                                                String PO = GS.toJson(Pending_Orders_List);
+                                                i.putExtra("Business_username", allOrders.get(position).getBusinessUserName());
+                                                i.putExtra("PendingOrderList", PO);
+                                                startActivity(i);
+                                                Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                                            }
                                         } else {
                                             Intent i = new Intent(getApplicationContext(), Customer_OrderDetails.class);
                                             Gson GS = new Gson();

@@ -25,8 +25,10 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.Arrays;
 import java.util.List;
 
+import co.sendddelivery.Databases.DB_PreviousOrders;
 import co.sendddelivery.GetterandSetter.CustomerPatch;
 import co.sendddelivery.GetterandSetter.Customer_shipment;
+import co.sendddelivery.GetterandSetter.PickedupOrders;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import retrofit.Callback;
@@ -201,6 +203,17 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                     if (mprogress.isShowing()) {
                                                         mprogress.dismiss();
                                                     }
+                                                    PickedupOrders po = new PickedupOrders();
+                                                    po.setName(getIntent().getStringExtra("custname"));
+                                                    po.setScannedorders(0);
+                                                    po.setBusinessusername(getIntent().getStringExtra("custname"));
+                                                    po.setCancelledorders(1);
+                                                    po.setPickeduporders(0);
+
+
+                                                    DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                                    db_previousOrders.AddToDB(po);
+
                                                     shipmentnumber++;
                                                     counter++;
                                                     if (counter < mCustomer_Shipment.size()) {
@@ -377,6 +390,16 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                     if (mprogress.isShowing()) {
                                                                                         mprogress.dismiss();
                                                                                     }
+                                                                                    PickedupOrders po = new PickedupOrders();
+                                                                                    po.setName(getIntent().getStringExtra("custname"));
+                                                                                    po.setScannedorders(0);
+                                                                                    po.setBusinessusername(getIntent().getStringExtra("custname"));
+                                                                                    po.setCancelledorders(0);
+                                                                                    po.setPickeduporders(1);
+
+
+                                                                                    DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                                                                    db_previousOrders.AddToDB(po);
                                                                                     EnterQrcode.setText("Enter QR Code");
                                                                                     QrScan.setText("Scan QR Code");
                                                                                     shipmentnumber++;

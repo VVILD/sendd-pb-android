@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.inputmethod.InputMethodManager;
 
+import co.sendddelivery.Databases.DB_PreviousOrders;
+
 /**
  * Created by harshkaranpuria on 7/24/15.
  */
@@ -22,11 +24,16 @@ public class Utils extends Activity {
     }
 
 
+
     public static void hideSoftKeyboard(Activity activity) {
 
         InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         if(inputMethodManager != null)
-            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+            try {
+                inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+            }catch(NullPointerException e){
+
+            }
     }
 
     public boolean isSynced() {
@@ -45,17 +52,25 @@ public class Utils extends Activity {
         return true;
     }
 
-    public boolean setvalueLong(String keyname,Long value){
+    public boolean setInt(String keyname,int value){
         SharedPreferences.Editor editor=sharedpreferences.edit();
-        editor.putLong(keyname,value);
+        editor.putInt(keyname, value);
         editor.apply();
         return true;
     }
+    public int getInt(String keyname){
+        return sharedpreferences.getInt(keyname, 0);
+    }
+
 
     public String getvalue(String keyname){
         return sharedpreferences.getString(keyname, "");
     }
 
+    public static void ClearPickedUpOrders(){
+        DB_PreviousOrders po = new DB_PreviousOrders();
+        po.deleteAllItems();
+    }
     public void clear() {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
