@@ -63,6 +63,8 @@ public class Business_orders_sublist extends Activity {
     ProgressDialog mprogress;
     Utils utils, mUtils;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -515,8 +517,10 @@ public class Business_orders_sublist extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent i = new Intent(this,Activity_Orders.class);
+        startActivity(i);
         finish();
-        Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
+        overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 }
 

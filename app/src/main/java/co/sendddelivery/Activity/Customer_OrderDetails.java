@@ -180,7 +180,9 @@ public class Customer_OrderDetails extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent i = new Intent(this,Activity_Orders.class);
+        startActivity(i);
         finish();
-        Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
+         Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 }

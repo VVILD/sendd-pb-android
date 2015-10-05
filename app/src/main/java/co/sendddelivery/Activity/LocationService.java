@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 import co.sendddelivery.GetterandSetter.LocationParameters;
 import co.sendddelivery.Utils.NetworkUtils;
+import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -28,6 +29,7 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         intent = new Intent(BROADCAST_ACTION);
+        Log.i("LocationService","onCreate");
     }
 
     @Override
@@ -36,6 +38,7 @@ public class LocationService extends Service {
         listener = new MyLocationListener();
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60*5 , 500, listener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 60 * 5, 500, listener);
+        Log.i("onStartCommand", "onCreate");
         return START_NOT_STICKY;
     }
     @Override
@@ -47,6 +50,7 @@ public class LocationService extends Service {
         if (currentBestLocation == null) {
             return true;
         }
+        Log.i("isBetterLocation", "onCreate");
 
         long timeDelta = location.getTime() - currentBestLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
@@ -92,8 +96,10 @@ public class LocationService extends Service {
             if (isBetterLocation(loc, previousBestLocation)) {
                 LocationParameters lp = new LocationParameters();
                 lp.setLat(loc.getLatitude());
+                Log.i("MyLocationListener", "Pushed on network");
+                Utils newUtils =new Utils(getApplicationContext());
                 lp.setLon(loc.getLongitude());
-                lp.setPbuser("/pb_api/v1/pb_users/9920899602/");
+                lp.setPbuser("/pb_api/v1/pb_users/" + newUtils.getvalue("PhoneNumber") + "/");
                 mnetworkutils = new NetworkUtils(LocationService.this);
                 mnetworkutils.getapi().sendlocation(lp, new Callback<Response>() {
                             @Override

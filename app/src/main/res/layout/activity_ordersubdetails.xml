@@ -11,9 +11,9 @@
         android:orientation="vertical">
 
 
-        <include
-            android:id="@+id/thankyou_activity"
-            layout="@layout/toolbar_customerdetail" />
+        <!--<include-->
+            <!--android:id="@+id/thankyou_activity"-->
+            <!--layout="@layout/toolbar_customerdetail" />-->
         <TextView
             android:id="@+id/TotalOrders"
             android:layout_width="match_parent"

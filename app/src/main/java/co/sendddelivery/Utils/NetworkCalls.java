@@ -19,9 +19,6 @@ import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-/**
- * Created by Kuku on 17/02/15.
- */
 public interface NetworkCalls {
     @GET("/pb_api/v1/pending_orders/")
     void getOrders(@Query("pb_ph") String pb_ph, Callback<Response> responseCallback);

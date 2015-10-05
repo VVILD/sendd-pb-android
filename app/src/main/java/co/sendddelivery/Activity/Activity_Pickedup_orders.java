@@ -1,6 +1,7 @@
 package co.sendddelivery.Activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -124,7 +125,9 @@ public class Activity_Pickedup_orders extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
+        Intent i = new Intent(this,Activity_Orders.class);
+        startActivity(i);
         finish();
-        Activity_Pickedup_orders.this.overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
+        overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
     }
 }

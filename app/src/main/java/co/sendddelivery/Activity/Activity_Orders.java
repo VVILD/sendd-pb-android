@@ -1,6 +1,6 @@
 package co.sendddelivery.Activity;
 
-import android.app.ActivityManager;
+ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -76,6 +76,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
     DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
     DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
     int counter = 0;
+    boolean shouldRestart= true;
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -92,7 +93,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_allorders);
         mUtils = new Utils(this);
-
+        updateOrders();
+        Log.i("OnCreate","Called");
         final Utils utils = new Utils(Activity_Orders.this);
         DateTime dt = new DateTime();
         if (utils.getInt("date") != 0) {
@@ -136,6 +138,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                 mUtils.setvalue("LoggedIn", "No");
                                 Intent i = new Intent(getApplicationContext(), Activity_Login.class);
                                 startActivity(i);
+                                shouldRestart = false;
                                 Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                                 finish();
                             }
@@ -251,6 +254,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                         i.putExtra("businessusername",address_list.get(position).getBusinessUserName());
                         i.putExtra("Business_name",address_list.get(position).getBusinessName());
                         startActivity(i);
+                        shouldRestart= false;
+                        finish();
                     }
                 });
                 pendingorders_holder.isComplete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -335,6 +340,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
 
     public void onResume() {
         super.onResume();
+        shouldRestart =true;
         mUtils = new Utils(this);
 
         final Utils utils = new Utils(Activity_Orders.this);
@@ -350,7 +356,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                updateOrders();
+//                updateOrders();
                 return true;
             }
         });
@@ -382,6 +388,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
             case R.id.previousShipment:
                 Intent i = new Intent(getApplicationContext(), Activity_Pickedup_orders.class);
                 startActivity(i);
+                shouldRestart=false;
+                finish();
                 overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                 return true;
             default:
@@ -447,6 +455,10 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         return allOrders;
     }
 
+    public void onPause() {
+        super.onPause();
+     }
+
     public void updateOrders() {
         mprogress = new ProgressDialog(this);
         mprogress.setMessage("Please wait..");
@@ -461,6 +473,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                 mnetworkutils.getapi().getOrders(utils.getvalue("PhoneNumber"), new Callback<Response>() {
                             @Override
                             public void success(Response response, Response response2) {
+                                mprogress.dismiss();
+                                swipeRefreshLayout.setRefreshing(false);
 
                                 BufferedReader reader;
                                 StringBuilder sb = new StringBuilder();
@@ -607,8 +621,6 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                     e.printStackTrace();
                                 }
                                 lv_Saved_Address.setAdapter(madapter);
-                                mprogress.dismiss();
-                                swipeRefreshLayout.setRefreshing(false);
                                 lv_Saved_Address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -620,6 +632,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                                 i.putExtra("Business_username", allOrders.get(position).getBusinessUserName());
                                                 i.putExtra("PendingOrderList", PO);
                                                 startActivity(i);
+                                                shouldRestart=false;
+                                                finish();
                                                 Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                                             }
                                         } else {
@@ -630,6 +644,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                             i.putExtra("Customer_order_object", CO);
                                             i.putExtra("Customer_shipment_object", CS);
                                             startActivity(i);
+                                            shouldRestart =false;
+                                            finish();
                                             Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
 
                                         }

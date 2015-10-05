@@ -1,13 +1,17 @@
 package co.sendddelivery.Activity;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,12 +35,22 @@ import retrofit.mime.TypedByteArray;
 public class Activity_business_scanned_orders extends AppCompatActivity {
     TextView businessname;
     ListView prevOrdersList;
-    Button FinishScan, addmore;
+    Button FinishScan, Scan,Enter;
     ProgressDialog mprogress;
     NetworkUtils mnetworkutils;
     ArrayList<allotment_list> arrBarcode;
     ArrayList<String> barcodes;
     ArrayAdapter adapter;
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(this,Activity_Orders.class);
+        startActivity(i);
+        finish();
+        overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +63,38 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                 android.R.layout.simple_list_item_1, barcodes);
         prevOrdersList.setAdapter(adapter);
         FinishScan = (Button) findViewById(R.id.FinishScan);
-        addmore = (Button) findViewById(R.id.addmore);
-        addmore.setOnClickListener(new View.OnClickListener() {
+        Scan = (Button) findViewById(R.id.Scan);
+        Enter = (Button) findViewById(R.id.Enter);
+        Enter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog = new Dialog(Activity_business_scanned_orders.this);
+                dialog.setTitle("Enter QR Code");
+                dialog.setContentView(R.layout.dialog_barcode);
+                dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.WHITE)));
+                dialog.show();
+                final EditText etBarcodeValue = (EditText) dialog.findViewById(R.id.etBarcodeEntry);
+                Button getDetails = (Button) dialog.findViewById(R.id.bGetDetails);
+                getDetails.setText("Set Value");
+                getDetails.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final String barcodevalue1 = etBarcodeValue.getText().toString();
+                        dialog.dismiss();
+                        allotment_list allotment_list1 = new allotment_list();
+                        allotment_list1.setUsername(getIntent().getStringExtra("businessusername"));
+                        allotment_list1.setValue(barcodevalue1);
+                        if(!barcodes.contains(barcodevalue1)) {
+                            arrBarcode.add(allotment_list1);
+                            barcodes.add(barcodevalue1);
+                        }
+                        Log.d("MainActivity", "Scanned");
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+        Scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new IntentIntegrator(Activity_business_scanned_orders.this).initiateScan();
@@ -88,6 +132,8 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
 
                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                     db_previousOrders.AddToDB(po);
+                                    Intent i = new Intent(Activity_business_scanned_orders.this,Activity_Orders.class);
+                                    startActivity(i);
                                     finish();
                                 }
 
@@ -103,8 +149,7 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                 }
             }
         });
-        new IntentIntegrator(Activity_business_scanned_orders.this).initiateScan();
-    }
+     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

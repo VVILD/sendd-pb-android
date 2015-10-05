@@ -359,6 +359,8 @@ public class Business_order_details extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent i = new Intent(this,Activity_Orders.class);
+        startActivity(i);
         finish();
         Business_order_details.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
