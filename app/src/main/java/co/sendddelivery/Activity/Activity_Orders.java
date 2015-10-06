@@ -294,13 +294,6 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                                             if (mprogress.isShowing()) {
                                                                 mprogress.dismiss();
                                                             }
-                                                            String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                                            Log.v("failure", error.toString());
-                                                            Log.i("failure:URL:", error.getUrl());
-                                                            Log.i("Fail", error.getSuccessType().toString());
-                                                            Log.i("Fail", json);
-                                                            Log.i("Fail", error.getMessage());
-
                                                         }
                                                     }
                                             );
@@ -564,7 +557,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                             else
                                                 CO.setPromocode_type("NO CODE");
 
-                                            if (Customer_order.getString("promocode_amount") != null)
+                                            if (Customer_order.getString("promocode_amount") != null )
                                                 CO.setPromocode_amount(Customer_order.getString("promocode_amount"));
                                             else
                                                 CO.setPromocode_amount("0");

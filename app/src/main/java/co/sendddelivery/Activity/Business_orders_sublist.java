@@ -493,9 +493,9 @@ public class Business_orders_sublist extends Activity {
                                         mprogress.dismiss();
                                     }
                                     Toast.makeText(Business_orders_sublist.this,"Barcode Already Exist",Toast.LENGTH_LONG).show();
-                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                    Log.v("failure", json);
-                                    Log.i("qwertyuiopajklzxcvbnm,", error.toString());
+//                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+//                                    Log.v("failure", json);
+//                                    Log.i("qwertyuiopajklzxcvbnm,", error.toString());
 
                                 }
                             }

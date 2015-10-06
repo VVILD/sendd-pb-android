@@ -33,7 +33,11 @@ public class Customer_Bill_Summary extends Activity {
             tvCodeValue.setText(getIntent().getStringExtra("promocode_amount") + "% OFF");
             DiscountAmount = (getIntent().getFloatExtra("TotalPrice", 0) * Float.parseFloat(getIntent().getStringExtra("promocode_amount")))/100;
         } else if (getIntent().getStringExtra("promocode_type").equals("S")) {
-            totalPriceAfterDiscount = getIntent().getFloatExtra("TotalPrice", 0) - Float.parseFloat(getIntent().getStringExtra("promocode_amount"));
+            try{
+                totalPriceAfterDiscount = getIntent().getFloatExtra("TotalPrice", 0) - Float.parseFloat(getIntent().getStringExtra("promocode_amount"));
+            }catch (NumberFormatException e){
+                totalPriceAfterDiscount = getIntent().getFloatExtra("TotalPrice", 0);
+            }
             tvCodeValue.setText("Rs. " + getIntent().getStringExtra("promocode_amount") + " off");
             DiscountAmount = Float.parseFloat(getIntent().getStringExtra("promocode_amount"));
         } else {

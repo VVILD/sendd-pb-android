@@ -142,7 +142,7 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                    //String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
                                 }
                             }
                     );
