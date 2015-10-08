@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.view.inputmethod.InputMethodManager;
 
 import co.sendddelivery.Databases.DB_PreviousOrders;
+import co.sendddelivery.Databases.DB_PreviousOrders_details;
 
 /**
  * Created by harshkaranpuria on 7/24/15.
@@ -69,6 +70,10 @@ public class Utils extends Activity {
 
     public static void ClearPickedUpOrders(){
         DB_PreviousOrders po = new DB_PreviousOrders();
+        po.deleteAllItems();
+    }
+    public static void ClearPickedUpOrdersDEtails(){
+        DB_PreviousOrders_details po = new DB_PreviousOrders_details();
         po.deleteAllItems();
     }
     public void clear() {

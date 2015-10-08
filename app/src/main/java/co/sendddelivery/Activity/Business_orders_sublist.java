@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +48,6 @@ import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class Business_orders_sublist extends Activity {
     List<Pending_Orders> mPending_Order_list;
@@ -57,12 +55,12 @@ public class Business_orders_sublist extends Activity {
     BusinessOrders_Adapter madapter;
     String businessUserName;
     ArrayList<BusinessAllOrders> BAO;
-    Button scanQRCODE,EnterQRCode,detailsButton;
+    Button scanQRCODE, EnterQRCode, detailsButton, AddOrders;
     ArrayList<Pending_Orders> Pending_Orders_List = new ArrayList<>();
     NetworkUtils mnetworkutils = new NetworkUtils(this);
     ProgressDialog mprogress;
     Utils utils, mUtils;
-
+    String sPickuptime, snameLabel, saddressLabel, sphoneLabel;
 
 
     @Override
@@ -71,12 +69,20 @@ public class Business_orders_sublist extends Activity {
         setContentView(R.layout.activity_business_orders_sublist);
 
         scanQRCODE = (Button) findViewById(R.id.bScan_order);
-        EnterQRCode = (Button)findViewById(R.id.bEnter_Code);
-        detailsButton = (Button)findViewById(R.id.detailsButton);
-
+        EnterQRCode = (Button) findViewById(R.id.bEnter_Code);
+        detailsButton = (Button) findViewById(R.id.detailsButton);
+        AddOrders = (Button) findViewById(R.id.addOrdersButton);
         final String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
         final String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
 
+        AddOrders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), Activity_business_scanned_orders.class);
+                i.putExtra("businessusername", ForwardIntent_UserName);
+                i.putExtra("Business_name", getIntent().getStringExtra("Business_name"));
+                startActivity(i);}
+        });
         detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,28 +106,22 @@ public class Business_orders_sublist extends Activity {
                     @Override
                     public void onClick(View view) {
                         Intent callIntent = new Intent(Intent.ACTION_CALL);
-                        if(BAO.get(0).getBO().getB_contact_mob() != null) {
-                            callIntent.setData(Uri.parse("tel:" + BAO.get(0).getBO().getB_contact_mob()));
+                        if (BAO.get(0).getBO().getB_contact_mob() != null) {
+                            callIntent.setData(Uri.parse("tel:" + sphoneLabel));
                         }
                         startActivity(callIntent);
                     }
                 });
-                Pickuptime.setText(BAO.get(0).getBO().getPickup_time());
-                nameLabel.setText(BAO.get(0).getBO().getB_business_name());
-                addressLabel.setText(BAO.get(0).getBO().getB_address());
-                phoneLabel.setText(BAO.get(0).getBO().getB_contact_mob() + " , " + BAO.get(0).getBO().getB_contact_office());
-            }
+                Pickuptime.setText(sPickuptime);
+                nameLabel.setText(snameLabel);
+                addressLabel.setText(saddressLabel);
+                phoneLabel.setText(sphoneLabel);}
         });
         final String pendingOrders = getIntent().getStringExtra("PendingOrderList");
         businessUserName = getIntent().getStringExtra("Business_username");
         Gson GS = new Gson();
         mPending_Order_list = Arrays.asList(GS.fromJson(pendingOrders, Pending_Orders[].class));
         BAO = ShowAddressToList();
-        if (BAO.size() == 0) {
-            Intent i = new Intent(getApplicationContext(), Activity_Orders.class);
-            startActivity(i);
-            finish();
-        }
         ListView lv_Saved_Address = (ListView) findViewById(R.id.businesssubordersListView);
         madapter = new BusinessOrders_Adapter(Business_orders_sublist.this, R.layout.businessorders_list_item_list, ShowAddressToList());
         lv_Saved_Address.setAdapter(madapter);
@@ -135,6 +135,8 @@ public class Business_orders_sublist extends Activity {
                 i.putExtra("Business_Shipment", BS);
                 i.putExtra("Business_Order", BO);
                 i.putExtra("position", position);
+                i.putExtra("senderName", BAO.get(position).getBO().getName());
+                i.putExtra("OrderId",String.valueOf(BAO.get(position).getBO().getOrder_id()));
                 i.putExtra("pendingOrderId", BAO.get(position).getPendingOrderId());
                 i.putExtra("OrderName", BAO.get(position).getOrder_name());
                 i.putExtra("Business_username", ForwardIntent_UserName);
@@ -143,8 +145,6 @@ public class Business_orders_sublist extends Activity {
                 startActivity(i);
                 finish();
                 Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-
-
             }
         });
         scanQRCODE.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +176,6 @@ public class Business_orders_sublist extends Activity {
                         mprogress.setIndeterminate(true);
                         if (mnetworkutils.isnetconnected()) {
                             mprogress.show();
-                            Log.i("barcodevalue1=", barcodevalue1);
                             mnetworkutils.getapi().getorder(barcodevalue1, new Callback<Response>() {
                                         @Override
                                         public void success(Response response, Response response2) {
@@ -253,13 +252,13 @@ public class Business_orders_sublist extends Activity {
                                             String BS = GS.toJson(Pending_Orders_List.get(0).getBusiness_Shipment());
                                             String pol = GS.toJson(Pending_Orders_List);
                                             i.putExtra("Business_Shipment", BS);
+                                            i.putExtra("senderName",Pending_Orders_List.get(0).getBusiness_Order().getName());
                                             i.putExtra("Business_username", Pending_Orders_List.get(0).getBusiness_Order().getB_username());
                                             i.putExtra("Business_name", Pending_Orders_List.get(0).getBusiness_Order().getB_business_name());
                                             i.putExtra("PendingOrderList", pol);
                                             startActivity(i);
                                             finish();
                                             Business_orders_sublist.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-
                                             dialog.dismiss();
 
                                         }
@@ -270,10 +269,7 @@ public class Business_orders_sublist extends Activity {
                                             if (mprogress.isShowing()) {
                                                 mprogress.dismiss();
                                             }
-                                            String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                            Log.v("failure", json);
-                                            Log.i("qwertyuiopajklzxcvbnm,", error.toString());
-
+                                            Toast.makeText(Business_orders_sublist.this, "BarCode Not Found", Toast.LENGTH_LONG).show();
                                         }
                                     }
 
@@ -358,21 +354,24 @@ public class Business_orders_sublist extends Activity {
     }
 
     public ArrayList<BusinessAllOrders> ShowAddressToList() {
-
-
         int pendingorderId = 0;
         BusinessallOrders = new ArrayList<>();
         for (int i = 0; i < mPending_Order_list.size(); i++) {
             BusinessAllOrders allorders = new BusinessAllOrders();
-
             if (mPending_Order_list.get(i).getIsBusiness()) {
                 if (mPending_Order_list.get(i).getBusiness_Order().getB_username().equals(businessUserName)) {
                     if (!mPending_Order_list.get(i).getBusiness_Order().getIsComplete()) {
-                        allorders.setOrder_name("DATE:"+mPending_Order_list.get(i).getBusiness_Order().getOrderdate()+"||"+"Order-" + mPending_Order_list.get(i).getBusiness_Order().getOrder_id() + "|| NAME:" + mPending_Order_list.get(i).getBusiness_Order().getName());
-                        allorders.setBO(mPending_Order_list.get(i).getBusiness_Order());
-                        allorders.setBS(mPending_Order_list.get(i).getBusiness_Shipment());
-                        allorders.setPendingOrderId(pendingorderId);
-                        BusinessallOrders.add(allorders);
+                        sPickuptime =mPending_Order_list.get(i).getBusiness_Order().getPickup_time();
+                        snameLabel =mPending_Order_list.get(i).getBusiness_Order().getB_business_name();
+                        saddressLabel =mPending_Order_list.get(i).getBusiness_Order().getB_address();
+                        sphoneLabel =mPending_Order_list.get(i).getBusiness_Order().getB_contact_mob();
+                        if (mPending_Order_list.get(i).getBusiness_Shipment().size() > 0) {
+                            allorders.setOrder_name(Html.fromHtml("<b>" + "DATE:-  " + "</b>") + mPending_Order_list.get(i).getBusiness_Order().getOrderdate() + "\n" + Html.fromHtml("<b>" + "Order no:-  " + "</b>") + mPending_Order_list.get(i).getBusiness_Order().getOrder_id() + "\n" + Html.fromHtml("<b>" + "NAME:-  " + "</b>") + mPending_Order_list.get(i).getBusiness_Order().getName());
+                            allorders.setBO(mPending_Order_list.get(i).getBusiness_Order());
+                            allorders.setBS(mPending_Order_list.get(i).getBusiness_Shipment());
+                            allorders.setPendingOrderId(pendingorderId);
+                            BusinessallOrders.add(allorders);
+                        }
                     }
                 }
             }
@@ -390,7 +389,6 @@ public class Business_orders_sublist extends Activity {
             if (result.getContents() == null) {
                 Log.d("MainActivity", "Cancelled scan");
             } else {
-                Toast.makeText(Business_orders_sublist.this,result.getContents(),Toast.LENGTH_LONG).show();
                 Log.d("MainActivity", "Scanned");
                 mUtils = new Utils(Business_orders_sublist.this);
                 utils = new Utils(Business_orders_sublist.this);
@@ -424,7 +422,6 @@ public class Business_orders_sublist extends Activity {
                                         e.printStackTrace();
                                     }
                                     String result = sb.toString();
-                                    Log.i("ultresult", result);
                                     try {
                                         JSONObject jObj = new JSONObject(result);
                                         JSONArray pending_orders = jObj.getJSONArray("pending_orders");
@@ -467,17 +464,17 @@ public class Business_orders_sublist extends Activity {
                                             PO.setBusiness_Order(BO);
                                             PO.setBusiness_Shipment(Business_Shpiment_List);
                                             Pending_Orders_List.add(PO);
-                                         }
+                                        }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
                                     Intent i = new Intent(getApplicationContext(), Business_order_details_fromBarcode.class);
-
                                     i.putExtra("barcodevalue", barcodevalue);
                                     Gson GS = new Gson();
                                     String BS = GS.toJson(Pending_Orders_List.get(0).getBusiness_Shipment());
                                     String pol = GS.toJson(Pending_Orders_List);
                                     i.putExtra("Business_Shipment", BS);
+                                    i.putExtra("senderName",Pending_Orders_List.get(0).getBusiness_Order().getName());
                                     i.putExtra("Business_username", Pending_Orders_List.get(0).getBusiness_Order().getB_username());
                                     i.putExtra("Business_name", Pending_Orders_List.get(0).getBusiness_Order().getB_business_name());
                                     i.putExtra("PendingOrderList", pol);
@@ -492,14 +489,9 @@ public class Business_orders_sublist extends Activity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    Toast.makeText(Business_orders_sublist.this,"Barcode Already Exist",Toast.LENGTH_LONG).show();
-//                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-//                                    Log.v("failure", json);
-//                                    Log.i("qwertyuiopajklzxcvbnm,", error.toString());
-
+                                    Toast.makeText(Business_orders_sublist.this, "BarCode Not Found", Toast.LENGTH_LONG).show();
                                 }
                             }
-
                     );
                 } else {
                     if (mprogress.isShowing()) {
@@ -517,7 +509,7 @@ public class Business_orders_sublist extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(this,Activity_Orders.class);
+        Intent i = new Intent(this, Activity_Orders.class);
         startActivity(i);
         finish();
         overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);

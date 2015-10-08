@@ -11,9 +11,9 @@
         android:orientation="vertical">
 
 
-        <!--<include-->
-            <!--android:id="@+id/thankyou_activity"-->
-            <!--layout="@layout/toolbar_customerdetail" />-->
+        <include
+        android:id="@+id/thankyou_activity"
+        layout="@layout/toolbar_customerdetail" />
         <TextView
             android:id="@+id/TotalOrders"
             android:layout_width="match_parent"
@@ -44,41 +44,12 @@
             android:text="A-3 35 Grren Fields JVLR andheri EAST mumbai 400093"
             android:textSize="20sp" />
 
-        <RadioGroup
-            android:id="@+id/modeofshipment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/destinationaddress"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="15dp"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_premium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Premium" />
-
-            <RadioButton
-                android:id="@+id/radio_regular"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Standard" />
-
-            <RadioButton
-                android:id="@+id/radio_express"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bulk" />
-
-        </RadioGroup>
 
         <TextView
             android:id="@+id/nametext"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/modeofshipment"
+            android:layout_below="@+id/destinationaddress"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
@@ -100,7 +71,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/nametext"
-            android:layout_below="@+id/modeofshipment"
+            android:layout_below="@+id/destinationaddress"
             android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/nametext"
             android:inputType="numberDecimal"
@@ -116,54 +87,6 @@
             android:hint="Enter Item Price"
             android:inputType="numberDecimal"
             android:singleLine="true" />
-
-        <!--<RelativeLayout-->
-            <!--android:id="@+id/lldimensions"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@+id/etItemPrice"-->
-            <!--android:layout_margin="10dp"-->
-            <!--android:background="@android:drawable/dialog_holo_light_frame"-->
-            <!--android:weightSum="100">-->
-
-            <!--<EditText-->
-                <!--android:id="@+id/etItemLength"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginRight="10dp"-->
-                <!--android:layout_weight="33"-->
-                <!--android:gravity="center"-->
-                <!--android:hint="Length"-->
-                <!--android:inputType="numberDecimal"-->
-                <!--android:singleLine="true" />-->
-
-            <!--<EditText-->
-                <!--android:id="@+id/etItemBreadth"-->
-                <!--android:layout_width="wrap_content"-->
-
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_below="@+id/weighttext"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:layout_marginRight="10dp"-->
-                <!--android:layout_weight="33"-->
-                <!--android:gravity="center"-->
-                <!--android:hint="Breadth"-->
-
-                <!--android:inputType="numberDecimal"-->
-                <!--android:singleLine="true" />-->
-
-            <!--<EditText-->
-                <!--android:id="@+id/etItemHeight"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_below="@+id/weighttext"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:layout_weight="33"-->
-                <!--android:gravity="center"-->
-                <!--android:hint="Height"-->
-                <!--android:inputType="numberDecimal"-->
-                <!--android:singleLine="true" />-->
-        <!--</RelativeLayout>-->
 
         <TextView
             android:id="@+id/weighttext"
@@ -209,11 +132,41 @@
             android:hint="Enter Item Value"
             android:singleLine="true" />
 
+        <RadioGroup
+            android:id="@+id/modeofshipment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etItemValue"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="15dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_premium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Premium" />
+
+            <RadioButton
+                android:id="@+id/radio_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Standard" />
+
+            <RadioButton
+                android:id="@+id/radio_express"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bulk" />
+
+        </RadioGroup>
+
         <LinearLayout
             android:id="@+id/llthree"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/etItemValue"
+            android:layout_below="@+id/modeofshipment"
             android:layout_marginTop="20dp"
             android:weightSum="100">
 

@@ -1,14 +1,12 @@
 package co.sendddelivery.Activity;
 
- import android.app.ActivityManager;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import co.sendddelivery.Databases.DB_PreviousOrders;
 import co.sendddelivery.GetterandSetter.AllOrders;
 import co.sendddelivery.GetterandSetter.Business_Order;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
@@ -54,6 +52,7 @@ import co.sendddelivery.GetterandSetter.Customer_Order;
 import co.sendddelivery.GetterandSetter.Customer_shipment;
 import co.sendddelivery.GetterandSetter.Drop_address;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
+import co.sendddelivery.GetterandSetter.PickedupOrders;
 import co.sendddelivery.GetterandSetter.business_is_completePatch;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
@@ -61,7 +60,6 @@ import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private NetworkUtils mnetworkutils = new NetworkUtils(this);
@@ -71,12 +69,11 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
     private Utils mUtils;
     public static Toolbar toolbar;
     private ProgressDialog mprogress;
-    private Handler handler;
     private SwipeRefreshLayout swipeRefreshLayout;
     DateFormat format = new SimpleDateFormat("H:m:s", Locale.ENGLISH);
     DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
     int counter = 0;
-    boolean shouldRestart= true;
+    boolean shouldRestart = true;
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -94,16 +91,16 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         setContentView(R.layout.activity_allorders);
         mUtils = new Utils(this);
         updateOrders();
-        Log.i("OnCreate","Called");
         final Utils utils = new Utils(Activity_Orders.this);
         DateTime dt = new DateTime();
         if (utils.getInt("date") != 0) {
             if (utils.getInt("date") < dt.getDayOfMonth()) {
                 Utils.ClearPickedUpOrders();
+                Utils.ClearPickedUpOrdersDEtails();
                 utils.setInt("date", dt.getDayOfMonth());
             }
         } else {
-           utils.setInt("date", dt.getDayOfMonth());
+            utils.setInt("date", dt.getDayOfMonth());
         }
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -133,7 +130,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                         .setCancelable(false)
                         .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
+                                dialog.dismiss();
                                 mUtils.setvalue("PhoneNumber", "");
                                 mUtils.setvalue("LoggedIn", "No");
                                 Intent i = new Intent(getApplicationContext(), Activity_Login.class);
@@ -159,12 +156,10 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         private TextView Order_Name;
         private TextView Locality;
         private TextView numberofShipments;
-        private ImageView ScanBarcodes;
         private TextView PickupTime;
         private CheckBox isComplete;
     }
 
-    //Set up Address Adapter
     public class PendingOrders_Adapter extends ArrayAdapter<AllOrders> {
 
         private Context c;
@@ -246,18 +241,6 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
             }
             if (type == 1) {
                 pendingorders_holder.isComplete = (CheckBox) convertView.findViewById(R.id.isBusinessComplete);
-                pendingorders_holder.ScanBarcodes = (ImageView) convertView.findViewById(R.id.ScanBarcode);
-                pendingorders_holder.ScanBarcodes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent i = new Intent(getApplicationContext(), Activity_business_scanned_orders.class);
-                        i.putExtra("businessusername",address_list.get(position).getBusinessUserName());
-                        i.putExtra("Business_name",address_list.get(position).getBusinessName());
-                        startActivity(i);
-                        shouldRestart= false;
-                        finish();
-                    }
-                });
                 pendingorders_holder.isComplete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -268,38 +251,50 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                     .setCancelable(false)
                                     .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
-
+                                            dialog.dismiss();
                                             business_is_completePatch bis = new business_is_completePatch();
-                                        bis.setIs_complete(true);
-                                        mnetworkutils = new NetworkUtils(Activity_Orders.this);
-                                        mprogress = new ProgressDialog(Activity_Orders.this);
-                                        mprogress.setMessage("Please wait...");
-                                        mprogress.setCancelable(false);
-                                        mprogress.setIndeterminate(true);
+                                            bis.setIs_complete(true);
+                                            mnetworkutils = new NetworkUtils(Activity_Orders.this);
+                                            mprogress = new ProgressDialog(Activity_Orders.this);
+                                            mprogress.setMessage("Please wait...");
+                                            mprogress.setCancelable(false);
+                                            mprogress.setIndeterminate(true);
+                                            if (mnetworkutils.isnetconnected()) {
+                                                mprogress.show();
+                                                mnetworkutils.getapi().closeBusiness(address_list.get(position).getBusinessUserName(), bis, new Callback<Response>() {
+                                                            @Override
+                                                            public void success(Response response, Response response1) {
+                                                                if (mprogress.isShowing()) {
+                                                                    mprogress.dismiss();
+                                                                }
+                                                                PickedupOrders po = new PickedupOrders();
+                                                                po.setName(address_list.get(position).getBusinessName());
+                                                                po.setScannedorders(0);
+                                                                po.setBusinessusername(address_list.get(position).getBusinessUserName());
+                                                                po.setCancelledorders(0);
+                                                                po.setPickeduporders(0);
+                                                                DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
+                                                                db_previousOrders.AddToDB(po);
 
-                                        if (mnetworkutils.isnetconnected()) {
-                                            mprogress.show();
-                                            mnetworkutils.getapi().closeBusiness(address_list.get(position).getBusinessUserName(), bis, new Callback<Response>() {
-                                                        @Override
-                                                        public void success(Response response, Response response1) {
-                                                            if (mprogress.isShowing()) {
-                                                                mprogress.dismiss();
+                                                                updateOrders();
                                                             }
 
-                                                            updateOrders();
-                                                        }
-
-                                                        @Override
-                                                        public void failure(RetrofitError error) {
-                                                            if (mprogress.isShowing()) {
-                                                                mprogress.dismiss();
+                                                            @Override
+                                                            public void failure(RetrofitError error) {
+                                                                if (mprogress.isShowing()) {
+                                                                    mprogress.dismiss();
+                                                                }
+                                                                Toast.makeText(Activity_Orders.this, "Error in Network Connection", Toast.LENGTH_LONG).show();
+                                                                pendingorders_holder.isComplete.setChecked(false);
                                                             }
                                                         }
-                                                    }
-                                            );
+                                                );
+                                            }else{
+                                                Toast.makeText(Activity_Orders.this, "Error in Network Connection", Toast.LENGTH_LONG).show();
+                                                pendingorders_holder.isComplete.setChecked(false);
+                                            }
+
                                         }
-
-                                    }
                                     })
                                     .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
@@ -313,15 +308,12 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                 });
 
             }
-
-            //setup list objects
             if (address_list.get(position).getIsBusiness()) {
                 pendingorders_holder.PickupTime.setBackgroundColor(getResources().getColor(R.color.lightgreen));
             } else {
                 pendingorders_holder.PickupTime.setBackgroundColor(getResources().getColor(R.color.yellow));
 
             }
-            //Log.i("address_list.get(position).getLocality()",address_list.get(position).getLocality());
             pendingorders_holder.numberofShipments.setText(address_list.get(position).getNumberofShipments());
             pendingorders_holder.Locality.setText(address_list.get(position).getLocality());
             pendingorders_holder.Order_Name.setText(address_list.get(position).getOrder_name());
@@ -333,7 +325,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
 
     public void onResume() {
         super.onResume();
-        shouldRestart =true;
+        shouldRestart = true;
         mUtils = new Utils(this);
 
         final Utils utils = new Utils(Activity_Orders.this);
@@ -341,31 +333,12 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         if (utils.getInt("date") != 0) {
             if (utils.getInt("date") < dt.getDayOfMonth()) {
                 Utils.ClearPickedUpOrders();
+                Utils.ClearPickedUpOrdersDEtails();
                 utils.setInt("date", dt.getDayOfMonth());
             }
         } else {
             utils.setInt("date", dt.getDayOfMonth());
         }
-        handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-//                updateOrders();
-                return true;
-            }
-        });
-        Thread timer = new Thread() {
-            public void run() {
-                try {
-                    sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } finally {
-                    Message msg = handler.obtainMessage();
-                    handler.sendMessage(msg);
-                }
-            }
-        };
-        timer.start();
     }
 
     @Override
@@ -381,7 +354,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
             case R.id.previousShipment:
                 Intent i = new Intent(getApplicationContext(), Activity_Pickedup_orders.class);
                 startActivity(i);
-                shouldRestart=false;
+                shouldRestart = false;
                 finish();
                 overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                 return true;
@@ -396,21 +369,17 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
 
             AllOrders allorders = new AllOrders();
             Boolean flag = true;
-            int j = 0;
             if (Pending_Orders_List.get(i).getIsBusiness()) {
                 for (int l = 0; l < allOrders.size(); l++) {
-                    // Log.i("Count" + Pending_Orders_List.get(i).getBusiness_Order().getB_business_name(), String.valueOf(counter++));
                     flag = !allOrders.get(l).getOrder_name().equals(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
-
                 }
                 if (flag) {
                     for (int k = 0; k < Pending_Orders_List.size(); k++) {
                         if (Pending_Orders_List.get(k).getIsBusiness()) {
                             if (Pending_Orders_List.get(i).getBusiness_Order().getB_username().equals(Pending_Orders_List.get(k).getBusiness_Order().getB_username())) {
-                                if(!Pending_Orders_List.get(k).getBusiness_Order().getOrder_id().equals("null")) {
+                                if (!Pending_Orders_List.get(k).getBusiness_Order().getOrder_id().equals("null")) {
                                     counter++;
                                 }
-                                Log.i("counter=", String.valueOf(counter));
                             }
                         }
                     }
@@ -448,10 +417,6 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
         return allOrders;
     }
 
-    public void onPause() {
-        super.onPause();
-     }
-
     public void updateOrders() {
         mprogress = new ProgressDialog(this);
         mprogress.setMessage("Please wait..");
@@ -468,7 +433,6 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                             public void success(Response response, Response response2) {
                                 mprogress.dismiss();
                                 swipeRefreshLayout.setRefreshing(false);
-
                                 BufferedReader reader;
                                 StringBuilder sb = new StringBuilder();
                                 try {
@@ -485,14 +449,12 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                     e.printStackTrace();
                                 }
                                 String result = sb.toString();
-                                Log.i("ultresult", result);
                                 try {
                                     JSONObject jObj = new JSONObject(result);
                                     JSONArray pending_orders = jObj.getJSONArray("pending_orders");
                                     for (int j = 0; j < pending_orders.length(); j++) {
                                         Pending_Orders PO = new Pending_Orders();
                                         JSONObject booking = pending_orders.getJSONObject(j);
-                                        Log.i("B2b or b2c", booking.getString("type"));
                                         if (booking.getString("type").equals("b2b")) {
                                             PO.setIsBusiness(true);
                                             JSONObject Business_order = booking.getJSONObject("order");
@@ -518,11 +480,11 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                                 Date date = format2.parse(Business_order.getString("book_time"));
                                                 String timeStamp = new SimpleDateFormat("dd-MMM", Locale.getDefault()).format(date);
                                                 BO.setOrderdate(timeStamp);
-                                            } catch (ParseException e) {
+                                            } catch (ParseException ignored) {
 
                                             }
                                             BO.setIsComplete(false);
-                                            if(booking.getJSONArray("shipments") != null) {
+                                            if (booking.getJSONArray("shipments") != null) {
                                                 ArrayList<Business_Shipment> Business_Shpiment_List = new ArrayList<>();
                                                 JSONArray Business_shipment = booking.getJSONArray("shipments");
                                                 for (int k = 0; k < Business_shipment.length(); k++) {
@@ -557,7 +519,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                             else
                                                 CO.setPromocode_type("NO CODE");
 
-                                            if (Customer_order.getString("promocode_amount") != null )
+                                            if (Customer_order.getString("promocode_amount") != null)
                                                 CO.setPromocode_amount(Customer_order.getString("promocode_amount"));
                                             else
                                                 CO.setPromocode_amount("0");
@@ -618,17 +580,17 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                                         if (allOrders.get(position).getIsBusiness()) {
-                                            if(Integer.parseInt(allOrders.get(position).getNumberofShipments()) != 0) {
-                                                Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
-                                                Gson GS = new Gson();
-                                                String PO = GS.toJson(Pending_Orders_List);
-                                                i.putExtra("Business_username", allOrders.get(position).getBusinessUserName());
-                                                i.putExtra("PendingOrderList", PO);
-                                                startActivity(i);
-                                                shouldRestart=false;
-                                                finish();
-                                                Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                                            }
+                                            Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
+                                            Gson GS = new Gson();
+                                            String PO = GS.toJson(Pending_Orders_List);
+                                            i.putExtra("Business_username", allOrders.get(position).getBusinessUserName());
+                                            i.putExtra("Business_name", allOrders.get(position).getBusinessName());
+                                            i.putExtra("PendingOrderList", PO);
+                                            startActivity(i);
+                                            shouldRestart = false;
+                                            finish();
+                                            Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
                                         } else {
                                             Intent i = new Intent(getApplicationContext(), Customer_OrderDetails.class);
                                             Gson GS = new Gson();
@@ -637,7 +599,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                                             i.putExtra("Customer_order_object", CO);
                                             i.putExtra("Customer_shipment_object", CS);
                                             startActivity(i);
-                                            shouldRestart =false;
+                                            shouldRestart = false;
                                             finish();
                                             Activity_Orders.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
 
@@ -650,6 +612,7 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                             public void failure(RetrofitError error) {
                                 mprogress.dismiss();
                                 swipeRefreshLayout.setRefreshing(false);
+                                Toast.makeText(Activity_Orders.this, "Error in getting Orders. Please try again in some time.", Toast.LENGTH_LONG).show();
                             }
                         }
                 );

@@ -10,6 +10,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.io.File;
 import co.sendddelivery.Databases.DB_PreviousOrders;
+import co.sendddelivery.Databases.DB_PreviousOrders_details;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -65,6 +66,9 @@ public class App extends Application {
     protected void initializeDB() {
         Configuration.Builder configurationBuilder = new Configuration.Builder(this);
         configurationBuilder.addModelClasses(DB_PreviousOrders.class);
+        configurationBuilder.addModelClasses(DB_PreviousOrders_details.class);
+
         ActiveAndroid.initialize(configurationBuilder.create());
+
     }
 }

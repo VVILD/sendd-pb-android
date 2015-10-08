@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,15 +16,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import co.sendddelivery.Databases.DB_PreviousOrders;
+import co.sendddelivery.Databases.DB_PreviousOrders_details;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
 import co.sendddelivery.GetterandSetter.PickedupOrders;
+import co.sendddelivery.GetterandSetter.Prev_Order_details;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class Business_order_details_fromBarcode extends Activity {
     List<Business_Shipment> mBusiness_Shipment;
@@ -46,7 +46,8 @@ public class Business_order_details_fromBarcode extends Activity {
         final Gson GS = new Gson();
         TextView totalshipment = (TextView) findViewById(R.id.TotalOrders);
         mBusiness_Shipment = Arrays.asList(GS.fromJson(BUsiness_shipment_object, Business_Shipment[].class));
-        totalshipment.setText("Total number of shipments = " + mBusiness_Shipment.size());
+        String totalShip ="Total number of shipments = " + mBusiness_Shipment.size();
+        totalshipment.setText(totalShip);
         QrScan = (Button) findViewById(R.id.QrCode);
         Button Cancel = (Button) findViewById(R.id.Cancel);
         Button Submit = (Button) findViewById(R.id.Submit);
@@ -78,6 +79,14 @@ public class Business_order_details_fromBarcode extends Activity {
                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                     db_previousOrders.AddToDB(po);
 
+                                    Prev_Order_details prev = new Prev_Order_details();
+                                    prev.setName(getIntent().getStringExtra("senderName") + "  TRACKING NO:" + mBusiness_Shipment.get(counter).getReal_tracking_no());
+                                    prev.setPickedup(false);
+                                    prev.setUsername(getIntent().getStringExtra("Business_username"));
+                                    DB_PreviousOrders_details dbPreviousOrdersDetails = new DB_PreviousOrders_details();
+                                    dbPreviousOrdersDetails.AddToDB(prev);
+
+
                                     Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
                                     String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
                                     String ForwardIntent_POL = getIntent().getStringExtra("PendingOrderList");
@@ -93,15 +102,13 @@ public class Business_order_details_fromBarcode extends Activity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    Log.i("Error:->", error.toString());
+                                    Toast.makeText(Business_order_details_fromBarcode.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
                                 }
                             }
-
                     );
                 } else {
                     Toast.makeText(Business_order_details_fromBarcode.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
-                }
-            }
+                }}
         });
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,9 +136,15 @@ public class Business_order_details_fromBarcode extends Activity {
                                     po.setCancelledorders(0);
                                     po.setPickeduporders(1);
 
-
                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                     db_previousOrders.AddToDB(po);
+
+                                    Prev_Order_details prev = new Prev_Order_details();
+                                    prev.setName(getIntent().getStringExtra("senderName") + "  TRACKING NO:" + mBusiness_Shipment.get(counter).getReal_tracking_no());
+                                    prev.setPickedup(true);
+                                    prev.setUsername(getIntent().getStringExtra("Business_username"));
+                                    DB_PreviousOrders_details dbPreviousOrdersDetails = new DB_PreviousOrders_details();
+                                    dbPreviousOrdersDetails.AddToDB(prev);
 
                                     Intent i = new Intent(getApplicationContext(), Business_orders_sublist.class);
                                     String ForwardIntent_UserName = getIntent().getStringExtra("Business_username");
@@ -149,8 +162,7 @@ public class Business_order_details_fromBarcode extends Activity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                    Log.v("failure", json);
+                                    Toast.makeText(Business_order_details_fromBarcode.this, "Error:Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
                                 }
                             }
                     );

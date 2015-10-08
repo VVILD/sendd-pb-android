@@ -14,22 +14,43 @@
         android:text="Business Orders"
         android:textSize="18dp" />
 
-    <Button
-        android:id="@+id/detailsButton"
+    <LinearLayout
+        android:id="@+id/llbuttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:background="@color/blue"
-        android:text="Details"
-        android:textColor="@color/white" />
+        android:text="Details">
+
+        <Button
+            android:id="@+id/addOrdersButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orderTitle"
+            android:layout_margin="10dp"
+            android:background="@color/blue"
+            android:padding="5dp"
+            android:text="Add Orders"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/detailsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orderTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:background="@color/blue"
+            android:padding="5dp"
+            android:text="Details"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/TVone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/detailsButton"
+        android:layout_below="@+id/llbuttons"
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="--------All Orders--------"

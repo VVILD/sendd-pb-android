@@ -25,17 +25,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import co.sendddelivery.Databases.DB_PreviousOrders;
+import co.sendddelivery.Databases.DB_PreviousOrders_details;
 import co.sendddelivery.GetterandSetter.BusinessPatch;
 import co.sendddelivery.GetterandSetter.Business_Shipment;
 import co.sendddelivery.GetterandSetter.Pending_Orders;
 import co.sendddelivery.GetterandSetter.PickedupOrders;
+import co.sendddelivery.GetterandSetter.Prev_Order_details;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import co.sendddelivery.Utils.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class Business_order_details extends Activity {
     List<Business_Shipment> mBusiness_Shipment;
@@ -90,7 +91,6 @@ public class Business_order_details extends Activity {
                     public void onClick(View view) {
                         final String barcodevalue1 = etBarcodeValue.getText().toString();
                         dialog.dismiss();
-                        Log.i("barcodevalue1", barcodevalue1);
                         EnterQrcode.setText(barcodevalue1);
                         BarcodeValue = barcodevalue1;
 
@@ -130,10 +130,16 @@ public class Business_order_details extends Activity {
                                                     po.setBusinessusername(getIntent().getStringExtra("Business_username"));
                                                     po.setCancelledorders(1);
                                                     po.setPickeduporders(0);
-
-
                                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                                     db_previousOrders.AddToDB(po);
+
+                                                    Prev_Order_details prev = new Prev_Order_details();
+                                                    prev.setName(getIntent().getStringExtra("senderName") + "  TRACKING NO:" + mBusiness_Shipment.get(counter).getReal_tracking_no());
+                                                    prev.setPickedup(false);
+                                                    prev.setUsername(getIntent().getStringExtra("Business_username"));
+                                                    DB_PreviousOrders_details dbPreviousOrdersDetails = new DB_PreviousOrders_details();
+                                                    dbPreviousOrdersDetails.AddToDB(prev);
+
                                                     counter++;
                                                     shipmentnumber++;
 
@@ -242,6 +248,14 @@ public class Business_order_details extends Activity {
 
                                             DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                             db_previousOrders.AddToDB(po);
+                                            Prev_Order_details prev = new Prev_Order_details();
+                                            prev.setName(getIntent().getStringExtra("senderName") + "  TRACKING NO:" + mBusiness_Shipment.get(counter-1).getReal_tracking_no());
+                                            prev.setPickedup(true);
+                                            prev.setUsername(getIntent().getStringExtra("Business_username"));
+                                            DB_PreviousOrders_details dbPreviousOrdersDetails = new DB_PreviousOrders_details();
+                                            dbPreviousOrdersDetails.AddToDB(prev);
+
+
                                             if (counter < mBusiness_Shipment.size()) {
                                                 currentshipment.setText("Shipment number " + shipmentnumber);
                                                 if (!mBusiness_Shipment.get(counter).getName().equals("null")) {

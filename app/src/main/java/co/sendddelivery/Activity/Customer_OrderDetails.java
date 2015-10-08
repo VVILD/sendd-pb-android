@@ -34,7 +34,8 @@ public class Customer_OrderDetails extends Activity {
     Button bProcess;
     ImageLoaderConfiguration config;
     public static Activity CustomerOrderDetailsActivity;
-
+    String Customer_shipment_object,Customer_order_object;
+    Customer_Order customer_order;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,46 +48,49 @@ public class Customer_OrderDetails extends Activity {
         config = new ImageLoaderConfiguration.Builder(this).defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
         bProcess = (Button) findViewById(R.id.bProcess);
-
-
         TextView nameLabel = (TextView) findViewById(R.id.nameLabel);
         TextView addressLabel = (TextView) findViewById(R.id.addressLabel);
         final TextView phoneLabel = (TextView) findViewById(R.id.phoneLabel);
+        Gson GS = new Gson();
+
+        Customer_order_object = getIntent().getStringExtra("Customer_order_object");
+        Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
+
+        customer_order = GS.fromJson(Customer_order_object, Customer_Order.class);
+        mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
+
+        nameLabel.setText(customer_order.getName());
+        String Add = customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode();
+        addressLabel.setText(Add);
+        phoneLabel.setText(customer_order.getUser());
         phoneLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:"+phoneLabel.getText().toString()));
+                callIntent.setData(Uri.parse("tel:" + phoneLabel.getText().toString()));
                 startActivity(callIntent);
             }
         });
-        String Customer_order_object = getIntent().getStringExtra("Customer_order_object");
-        final String Customer_shipment_object = getIntent().getStringExtra("Customer_shipment_object");
 
-        Gson GS = new Gson();
-        final Customer_Order customer_order = GS.fromJson(Customer_order_object, Customer_Order.class);
-        mCustomer_Shipment = Arrays.asList(GS.fromJson(Customer_shipment_object, Customer_shipment[].class));
-        nameLabel.setText(customer_order.getName());
-        addressLabel.setText(customer_order.getFlat_no() + " " + customer_order.getAddress() + " " + customer_order.getPincode());
-        phoneLabel.setText(customer_order.getUser());
+
+        ListView lv_Saved_Address = (ListView) findViewById(R.id.shipmentList);
+        Shipments_Adapter madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ALLShipments());
+        lv_Saved_Address.setAdapter(madapter);
+
         bProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), CustomerOrderSubDetails.class);
                 i.putExtra("Customer_shipment_object", getIntent().getStringExtra("Customer_shipment_object"));
-                i.putExtra("promocode_amount",customer_order.getPromocode_amount());
-                i.putExtra("promocode_type",customer_order.getPromocode_type());
-                i.putExtra("promocode_code",customer_order.getPromocode_code());
-                i.putExtra("promocode_msg",customer_order.getPromocode_msg());
-                i.putExtra("custname",customer_order.getName());
-
+                i.putExtra("promocode_amount", customer_order.getPromocode_amount());
+                i.putExtra("promocode_type", customer_order.getPromocode_type());
+                i.putExtra("promocode_code", customer_order.getPromocode_code());
+                i.putExtra("promocode_msg", customer_order.getPromocode_msg());
+                i.putExtra("custname", customer_order.getName());
                 startActivity(i);
                 Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
             }
         });
-        ListView lv_Saved_Address = (ListView) findViewById(R.id.shipmentList);
-        Shipments_Adapter madapter = new Shipments_Adapter(Customer_OrderDetails.this, R.layout.list_item_shipment_items_list, ALLShipments());
-        lv_Saved_Address.setAdapter(madapter);
     }
 
     public class Shipments_holder {
@@ -180,9 +184,9 @@ public class Customer_OrderDetails extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(this,Activity_Orders.class);
+        Intent i = new Intent(this, Activity_Orders.class);
         startActivity(i);
         finish();
-         Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
+        Customer_OrderDetails.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 }

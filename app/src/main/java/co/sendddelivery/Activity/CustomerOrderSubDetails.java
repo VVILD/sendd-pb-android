@@ -26,19 +26,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import co.sendddelivery.Databases.DB_PreviousOrders;
+import co.sendddelivery.Databases.DB_PreviousOrders_details;
 import co.sendddelivery.GetterandSetter.CustomerPatch;
 import co.sendddelivery.GetterandSetter.Customer_shipment;
 import co.sendddelivery.GetterandSetter.PickedupOrders;
+import co.sendddelivery.GetterandSetter.Prev_Order_details;
 import co.sendddelivery.R;
 import co.sendddelivery.Utils.NetworkUtils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class CustomerOrderSubDetails extends BaseActivity {
     private List<Customer_shipment> mCustomer_Shipment;
-    private EditText etItemweight, etItemPrice, etItemValue, etItemName, etLength, etBreadth, etHeight;
+    private EditText etItemweight, etItemPrice, etItemValue, etItemName;
     private Button QrScan, EnterQrcode;
     public static String flat_no, locality, city, state, country, pincode, pk, d_name, d_phone, BarcodeValue;
     int counter = 0, shipmentnumber = 1;
@@ -47,7 +48,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
     private RadioButton premium, standard, express;
     private TextView currentshipment;
     private TextView DestinationAddress;
-    public String promocode_type, promocode_amount, promocode_msg="", promocode_code="";
+    public String promocode_type, promocode_amount, promocode_msg = "", promocode_code = "";
     public float TotalPrice = 0;
 
     @Override
@@ -60,7 +61,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
         etItemName = (EditText) findViewById(R.id.etItemName);
         etItemValue = (EditText) findViewById(R.id.etItemValue);
         etItemweight = (EditText) findViewById(R.id.etItemweight);
-        TextView totalshipment = (TextView) findViewById(R.id.TotalOrders);
+        final TextView totalshipment = (TextView) findViewById(R.id.TotalOrders);
         currentshipment = (TextView) findViewById(R.id.CurrentShipment);
         etItemPrice = (EditText) findViewById(R.id.etItemPrice);
         premium = (RadioButton) findViewById(R.id.radio_premium);
@@ -69,8 +70,9 @@ public class CustomerOrderSubDetails extends BaseActivity {
         EnterQrcode = (Button) findViewById(R.id.enterQRCode);
         QrScan = (Button) findViewById(R.id.QrCode);
         Button Cancel = (Button) findViewById(R.id.Cancel);
-        Button Submit = (Button) findViewById(R.id.Submit);
+        final Button Submit = (Button) findViewById(R.id.Submit);
         Gson GS = new Gson();
+
 
         premium.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +96,7 @@ public class CustomerOrderSubDetails extends BaseActivity {
                     } else {
                         calPrice();
                     }
-                }catch (NumberFormatException ignored){
+                } catch (NumberFormatException ignored) {
                     standard.performClick();
                 }
             }
@@ -109,8 +111,9 @@ public class CustomerOrderSubDetails extends BaseActivity {
         promocode_amount = getIntent().getStringExtra("promocode_amount");
         promocode_msg = getIntent().getStringExtra("promocode_msg");
         promocode_code = getIntent().getStringExtra("promocode_code");
-
-        totalshipment.setText("Total number of shipments = " + mCustomer_Shipment.size());
+        final int totalsize = mCustomer_Shipment.size();
+        String totalShipment = "Total number of shipments = " + mCustomer_Shipment.size();
+        totalshipment.setText(totalShipment);
         if (getIntent().getStringExtra("flat_no") != null) {
             flat_no = getIntent().getStringExtra("flat_no");
             locality = getIntent().getStringExtra("locality");
@@ -131,7 +134,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
             d_name = mCustomer_Shipment.get(counter).getDrop_name();
             d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
         }
-        DestinationAddress.setText(flat_no + " " + locality + " " + city + " " + state + " " + country + " " + pincode);
+        String add1 = flat_no + " " + locality + " " + city + " " + state + " " + country + " " + pincode;
+        DestinationAddress.setText(add1);
         if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
             etItemName.setText(mCustomer_Shipment.get(counter).getItem_name());
         } else {
@@ -187,7 +191,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
                         .setCancelable(false)
                         .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
                                 CustomerPatch cp = new CustomerPatch();
                                 cp.setStatus("CA");
                                 mnetworkutils = new NetworkUtils(CustomerOrderSubDetails.this);
@@ -210,15 +213,21 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                     po.setCancelledorders(1);
                                                     po.setPickeduporders(0);
 
-
+                                                    Prev_Order_details prev = new Prev_Order_details();
+                                                    prev.setName(d_name+"  "+mCustomer_Shipment.get(counter).getReal_tracking_no());
+                                                    prev.setPickedup(false);
+                                                    prev.setUsername(getIntent().getStringExtra("custname"));
+                                                    DB_PreviousOrders_details dbPreviousOrdersDetails = new DB_PreviousOrders_details();
+                                                    dbPreviousOrdersDetails.AddToDB(prev);
                                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                                     db_previousOrders.AddToDB(po);
 
                                                     shipmentnumber++;
                                                     counter++;
                                                     if (counter < mCustomer_Shipment.size()) {
-                                                        EnterQrcode.setText("Enter QR Code");
-                                                        QrScan.setText("Scan QR Code");
+                                                        String QrText = "Enter QR Code", ScanText = "Scan QR Code";
+                                                        EnterQrcode.setText(QrText);
+                                                        QrScan.setText(ScanText);
                                                         flat_no = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no();
                                                         locality = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality();
                                                         city = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city();
@@ -228,8 +237,10 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                         pk = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pk();
                                                         d_name = mCustomer_Shipment.get(counter).getDrop_name();
                                                         d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
-                                                        currentshipment.setText("Shipment number " + shipmentnumber);
-                                                        DestinationAddress.setText(mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode());
+                                                        String ShipNumberVal = "Shipment number " + shipmentnumber;
+                                                        currentshipment.setText(ShipNumberVal);
+                                                        String Add = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode();
+                                                        DestinationAddress.setText(Add);
                                                         if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
                                                             etItemName.setText(mCustomer_Shipment.get(counter).getItem_name());
                                                         } else {
@@ -253,13 +264,18 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                         } else {
                                                             etItemValue.setText("");
                                                         }
+                                                        if(totalsize==shipmentnumber){
+                                                            Submit.setText("Finish Order");
+                                                        }else {
+                                                            Submit.setText("Next Order");
+                                                        }
                                                     } else {
                                                         Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
                                                         i.putExtra("promocode_type", promocode_type);
                                                         i.putExtra("promocode_amount", promocode_amount);
                                                         i.putExtra("TotalPrice", TotalPrice);
-                                                        i.putExtra("promocode_code",promocode_code);
-                                                        i.putExtra("promocode_msg",promocode_msg);
+                                                        i.putExtra("promocode_code", promocode_code);
+                                                        i.putExtra("promocode_msg", promocode_msg);
                                                         startActivity(i);
                                                         finish();
                                                         Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
@@ -322,7 +338,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 dialog.show();
                 final EditText etBarcodeValue = (EditText) dialog.findViewById(R.id.etBarcodeEntry);
                 Button getDetails = (Button) dialog.findViewById(R.id.bGetDetails);
-                getDetails.setText("Set Value");
+                String setValText = "Set Value";
+                getDetails.setText(setValText);
                 getDetails.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -333,7 +350,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
 
                     }
                 });
-
             }
         });
         Submit.setOnClickListener(new View.OnClickListener() {
@@ -351,7 +367,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                     if (pincode != null) {
                                                         if (BarcodeValue != null) {
                                                             if (BarcodeValue.length() >= 10 && BarcodeValue.length() <= 12) {
-                                                                Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
                                                                 CustomerPatch cp = new CustomerPatch();
                                                                 cp.setWeight(etItemweight.getText().toString());
                                                                 cp.setStatus("PU");
@@ -396,12 +411,18 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                     po.setBusinessusername(getIntent().getStringExtra("custname"));
                                                                                     po.setCancelledorders(0);
                                                                                     po.setPickeduporders(1);
-
-
                                                                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                                                                     db_previousOrders.AddToDB(po);
-                                                                                    EnterQrcode.setText("Enter QR Code");
-                                                                                    QrScan.setText("Scan QR Code");
+
+                                                                                    Prev_Order_details prev = new Prev_Order_details();
+                                                                                    prev.setName(d_name+"  "+mCustomer_Shipment.get(counter).getReal_tracking_no());
+                                                                                    prev.setPickedup(true);
+                                                                                    prev.setUsername(getIntent().getStringExtra("custname"));
+                                                                                    DB_PreviousOrders_details dbPreviousOrdersDetails = new DB_PreviousOrders_details();
+                                                                                    dbPreviousOrdersDetails.AddToDB(prev);
+                                                                                    String QrText = "Enter QR Code", ScanText = "Scan QR Code";
+                                                                                    EnterQrcode.setText(QrText);
+                                                                                    QrScan.setText(ScanText);
                                                                                     shipmentnumber++;
                                                                                     counter++;
                                                                                     if (counter < mCustomer_Shipment.size()) {
@@ -414,8 +435,10 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                         pk = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pk();
                                                                                         d_name = mCustomer_Shipment.get(counter).getDrop_name();
                                                                                         d_phone = mCustomer_Shipment.get(counter).getDrop_phone();
-                                                                                        currentshipment.setText("Shipment number " + shipmentnumber);
-                                                                                        DestinationAddress.setText(mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode());
+                                                                                        String ShipNumberVal = "Shipment number " + shipmentnumber;
+                                                                                        currentshipment.setText(ShipNumberVal);
+                                                                                        String Add = mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_flat_no() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_locality() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_city() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_state() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_country() + " " + mCustomer_Shipment.get(counter).getDrop_address().getDrop_address_pincode();
+                                                                                        DestinationAddress.setText(Add);
                                                                                         if (!mCustomer_Shipment.get(counter).getItem_name().equals("null")) {
                                                                                             etItemName.setText(mCustomer_Shipment.get(counter).getItem_name());
                                                                                         } else {
@@ -439,14 +462,19 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                         } else {
                                                                                             etItemValue.setText("");
                                                                                         }
+                                                                                        if(totalsize == shipmentnumber){
+                                                                                            Submit.setText("Finish Order");
+                                                                                        }else {
+                                                                                            Submit.setText("Next Order");
+                                                                                        }
                                                                                     } else {
 
                                                                                         Intent i = new Intent(getApplicationContext(), Customer_Bill_Summary.class);
                                                                                         i.putExtra("promocode_type", promocode_type);
                                                                                         i.putExtra("promocode_amount", promocode_amount);
                                                                                         i.putExtra("TotalPrice", TotalPrice);
-                                                                                        i.putExtra("promocode_code",promocode_code);
-                                                                                        i.putExtra("promocode_msg",promocode_msg);
+                                                                                        i.putExtra("promocode_code", promocode_code);
+                                                                                        i.putExtra("promocode_msg", promocode_msg);
                                                                                         startActivity(i);
                                                                                         finish();
                                                                                         Customer_OrderDetails.CustomerOrderDetailsActivity.finish();
@@ -461,12 +489,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
                                                                                         mprogress.dismiss();
                                                                                     }
                                                                                     Toast.makeText(CustomerOrderSubDetails.this, "Order did not process. Please check Barcode", Toast.LENGTH_LONG).show();
-//                                                                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-//                                                                                    Log.v("failure", json);
-//                                                                                    Log.i("asdf", error.getUrl());
                                                                                 }
                                                                             }
-
                                                                     );
                                                                 } else {
                                                                     Toast.makeText(CustomerOrderSubDetails.this, "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
@@ -509,11 +533,17 @@ public class CustomerOrderSubDetails extends BaseActivity {
                 }
             }
         });
+        if(totalsize==1){
+            Submit.setText("Finish Order");
+        }else {
+            Submit.setText("Next Order");
+        }
     }
 
     public void onResume() {
         super.onResume();
-        DestinationAddress.setText(flat_no + " " + locality + " " + city + " " + state + " " + country + " " + pincode);
+        String add = flat_no + " " + locality + " " + city + " " + state + " " + country + " " + pincode;
+        DestinationAddress.setText(add);
     }
 
     @Override
@@ -522,14 +552,11 @@ public class CustomerOrderSubDetails extends BaseActivity {
         if (result != null) {
             if (result.getContents() == null) {
                 Log.d("MainActivity", "Cancelled scan");
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Log.d("MainActivity", "Scanned");
                 QrScan.setText(result.getContents());
                 BarcodeValue = result.getContents();
             }
         } else {
-            Log.d("MainActivity", "Weird");
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -545,10 +572,6 @@ public class CustomerOrderSubDetails extends BaseActivity {
 
         try {
             float w = (float) Double.parseDouble(etItemweight.getText().toString());
-//            float volWeight = ((float) Double.parseDouble(etLength.getText().toString())*(float) Double.parseDouble(etBreadth.getText().toString())*(float) Double.parseDouble(etHeight.getText().toString()))/5000;
-//            if(volWeight >w){
-//                w = volWeight;
-//            }
             int[][] premium11 = new int[][]{{60, 30}, {90, 45}, {120, 50}, {140, 60}, {160, 65}};
             int[][] standard11 = new int[][]{{30, 28}, {60, 42}, {80, 47}, {100, 57}, {105, 62}};
             int[][] economy11 = new int[][]{{240, 15, 30}, {260, 15, 32}, {280, 15, 34}, {290, 15, 35}, {290, 15, 35}};
@@ -588,8 +611,8 @@ public class CustomerOrderSubDetails extends BaseActivity {
             }
             etItemValue.setText(String.valueOf(priceCalculated));
 
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-         }
+        } catch (NumberFormatException | StringIndexOutOfBoundsException ignored) {
+        }
     }
 
     @Override

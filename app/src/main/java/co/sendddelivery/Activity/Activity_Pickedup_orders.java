@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,6 +31,17 @@ public class Activity_Pickedup_orders extends AppCompatActivity {
         prevOrdersList = (ListView) findViewById(R.id.prevOrdersList);
         mAdapter = new OrderList_Adapter(this, R.layout.list_item_previousorder_list, ShowItemList());
         prevOrdersList.setAdapter(mAdapter);
+
+        prevOrdersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent ii = new Intent(getApplicationContext(),Activity_Prev_order_details.class);
+                ii.putExtra("Name",pickedupOrdersArrayList.get(i).getName());
+                ii.putExtra("ScannedOrders",pickedupOrdersArrayList.get(i).getScannedorders());
+                ii.putExtra("UsernameName",pickedupOrdersArrayList.get(i).getBusinessusername());
+                startActivity(ii);
+            }
+        });
     }
 
     public class previousAddress_holder {

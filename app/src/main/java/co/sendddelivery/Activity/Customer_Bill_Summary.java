@@ -16,7 +16,8 @@ public class Customer_Bill_Summary extends Activity {
 
     TextView FinalAmount, tvDiscountAmt, tvTotalPrice, tvCodeValue, tvCode;
     Button moneyCollected;
-    String x,y;
+    String x,y, noCode ="NO CODE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +31,8 @@ public class Customer_Bill_Summary extends Activity {
 
         if (getIntent().getStringExtra("promocode_type").equals("P")) {
             totalPriceAfterDiscount = getIntent().getFloatExtra("TotalPrice", 0) - (getIntent().getFloatExtra("TotalPrice", 0) * Float.parseFloat(getIntent().getStringExtra("promocode_amount"))) / 100;
-            tvCodeValue.setText(getIntent().getStringExtra("promocode_amount") + "% OFF");
+            String CodeAmt =getIntent().getStringExtra("promocode_amount") + "% OFF";
+            tvCodeValue.setText(CodeAmt);
             DiscountAmount = (getIntent().getFloatExtra("TotalPrice", 0) * Float.parseFloat(getIntent().getStringExtra("promocode_amount")))/100;
         } else if (getIntent().getStringExtra("promocode_type").equals("S")) {
             try{
@@ -38,30 +40,25 @@ public class Customer_Bill_Summary extends Activity {
             }catch (NumberFormatException e){
                 totalPriceAfterDiscount = getIntent().getFloatExtra("TotalPrice", 0);
             }
-            tvCodeValue.setText("Rs. " + getIntent().getStringExtra("promocode_amount") + " off");
+            String codeVal ="Rs. " + getIntent().getStringExtra("promocode_amount") + " off";
+            tvCodeValue.setText(codeVal);
             DiscountAmount = Float.parseFloat(getIntent().getStringExtra("promocode_amount"));
         } else {
             totalPriceAfterDiscount = getIntent().getFloatExtra("TotalPrice", 0);
             tvDiscountAmt.setText("0");
             tvCodeValue.setText("0");
-
-
         }
         x =getIntent().getStringExtra("promocode_msg");
         y =getIntent().getStringExtra("promocode_code");
-        Log.i("xxxx",x);
-        Log.i("yyy",y);
 
-        if(!getIntent().getStringExtra("promocode_msg").equals("") || getIntent().getStringExtra("promocode_msg")!=null){
-            Toast.makeText(Customer_Bill_Summary.this,getIntent().getStringExtra("promocode_msg"),Toast.LENGTH_LONG).show();
-        }
+
         if(!getIntent().getStringExtra("promocode_code").equals("") || getIntent().getStringExtra("promocode_code") != null) {
             tvCode.setText(getIntent().getStringExtra("promocode_code"));
         }else{
-            tvCode.setText("NO CODE");
+            tvCode.setText(noCode);
         }
         if(tvCode.getText().toString().equals("null")){
-            tvCode.setText("NO CODE");
+            tvCode.setText(noCode);
         }
         if(totalPriceAfterDiscount<0){
             FinalAmount.setText("0");

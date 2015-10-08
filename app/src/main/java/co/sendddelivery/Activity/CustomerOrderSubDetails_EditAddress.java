@@ -80,10 +80,7 @@ public class CustomerOrderSubDetails_EditAddress extends BaseActivity {
                 }
             }
         });
-
-
     }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();

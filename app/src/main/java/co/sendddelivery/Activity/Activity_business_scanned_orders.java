@@ -2,6 +2,7 @@ package co.sendddelivery.Activity;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -30,23 +32,21 @@ import co.sendddelivery.Utils.NetworkUtils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class Activity_business_scanned_orders extends AppCompatActivity {
     TextView businessname;
     ListView prevOrdersList;
-    Button FinishScan, Scan,Enter;
+    Button FinishScan, Scan, Enter;
     ProgressDialog mprogress;
     NetworkUtils mnetworkutils;
     ArrayList<allotment_list> arrBarcode;
     ArrayList<String> barcodes;
-    ArrayAdapter adapter;
+    ArrayAdapter<String> adapter;
+    Context context;
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(this,Activity_Orders.class);
-        startActivity(i);
         finish();
         overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
     }
@@ -55,12 +55,12 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_business_scanned_orders);
+        context = this;
         arrBarcode = new ArrayList<>();
         barcodes = new ArrayList<>();
         businessname = (TextView) findViewById(R.id.businessname);
         prevOrdersList = (ListView) findViewById(R.id.prevOrdersList);
-        adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, barcodes);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, barcodes);
         prevOrdersList.setAdapter(adapter);
         FinishScan = (Button) findViewById(R.id.FinishScan);
         Scan = (Button) findViewById(R.id.Scan);
@@ -68,14 +68,15 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
         Enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog dialog = new Dialog(Activity_business_scanned_orders.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.setTitle("Enter QR Code");
                 dialog.setContentView(R.layout.dialog_barcode);
                 dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.WHITE)));
                 dialog.show();
                 final EditText etBarcodeValue = (EditText) dialog.findViewById(R.id.etBarcodeEntry);
                 Button getDetails = (Button) dialog.findViewById(R.id.bGetDetails);
-                getDetails.setText("Set Value");
+                String text = "Set Value";
+                getDetails.setText(text);
                 getDetails.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -84,11 +85,16 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                         allotment_list allotment_list1 = new allotment_list();
                         allotment_list1.setUsername(getIntent().getStringExtra("businessusername"));
                         allotment_list1.setValue(barcodevalue1);
-                        if(!barcodes.contains(barcodevalue1)) {
-                            arrBarcode.add(allotment_list1);
-                            barcodes.add(barcodevalue1);
+                        if (!barcodes.contains(barcodevalue1)) {
+                            if (barcodevalue1.length() > 10 && barcodevalue1.length() < 14) {
+                                arrBarcode.add(allotment_list1);
+                                barcodes.add(barcodevalue1);
+                            } else {
+                                Toast.makeText(context, "The Barcode" + barcodevalue1 + "is Invalid", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(context, "The Barcode " + barcodevalue1 + " was already scanned", Toast.LENGTH_LONG).show();
                         }
-                        Log.d("MainActivity", "Scanned");
                         adapter.notifyDataSetChanged();
                     }
                 });
@@ -98,7 +104,6 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new IntentIntegrator(Activity_business_scanned_orders.this).initiateScan();
-
             }
         });
 
@@ -108,8 +113,8 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
             public void onClick(View view) {
                 business_is_completePatch bis = new business_is_completePatch();
                 bis.setIs_complete(true);
-                mnetworkutils = new NetworkUtils(Activity_business_scanned_orders.this);
-                mprogress = new ProgressDialog(Activity_business_scanned_orders.this);
+                mnetworkutils = new NetworkUtils(context);
+                mprogress = new ProgressDialog(context);
                 mprogress.setMessage("Please wait...");
                 mprogress.setCancelable(false);
                 mprogress.setIndeterminate(true);
@@ -129,11 +134,9 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                                     po.setBusinessusername(getIntent().getStringExtra("businessusername"));
                                     po.setCancelledorders(0);
                                     po.setPickeduporders(0);
-
                                     DB_PreviousOrders db_previousOrders = new DB_PreviousOrders();
                                     db_previousOrders.AddToDB(po);
-                                    Intent i = new Intent(Activity_business_scanned_orders.this,Activity_Orders.class);
-                                    startActivity(i);
+                                    overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
                                     finish();
                                 }
 
@@ -142,14 +145,17 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    //String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                    Toast.makeText(context, "There was a error in network connection. Please try again later.", Toast.LENGTH_LONG).show();
                                 }
                             }
                     );
+                }else{
+                    Toast.makeText(context, "There was a error in network connection. Please try again later.", Toast.LENGTH_LONG).show();
+
                 }
             }
         });
-     }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -157,23 +163,24 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
         if (result != null) {
             if (result.getContents() == null) {
                 Log.d("MainActivity", "Cancelled scan");
-             } else {
+            } else {
                 allotment_list allotment_list1 = new allotment_list();
                 allotment_list1.setUsername(getIntent().getStringExtra("businessusername"));
                 allotment_list1.setValue(result.getContents());
-                if(!barcodes.contains(result.getContents())) {
-                    arrBarcode.add(allotment_list1);
-                    barcodes.add(result.getContents());
+                if (!barcodes.contains(result.getContents())) {
+                    if (result.getContents().length() > 9 && result.getContents().length() < 14) {
+                        arrBarcode.add(allotment_list1);
+                        barcodes.add(result.getContents());
+                    } else {
+                        Toast.makeText(context, "The Barcode  " + result.getContents() + "  is Invalid", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(context, "The Barcode  " + result.getContents() + "  was already scanned.Please scan a new barcode.", Toast.LENGTH_LONG).show();
                 }
-                Log.d("MainActivity", "Scanned");
                 adapter.notifyDataSetChanged();
-
             }
         } else {
-            Log.d("MainActivity", "Weird");
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
 }
-

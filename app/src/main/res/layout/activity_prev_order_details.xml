@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
+        android:gravity="center"
+        android:text=""
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvScanorders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Name"
+        android:layout_margin="10dp"
+        android:text="Scanned Orders : "
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/ScannedOrders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Name"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@+id/tvScanorders"
+        android:text="0"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvPickedUpOrders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvScanorders"
+        android:layout_margin="10dp"
+        android:text="PickedUp Orders: "
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/lvPickedUpOrders"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_below="@+id/tvPickedUpOrders"
+        android:layout_margin="10dp">
+
+    </ListView>
+
+    <TextView
+        android:id="@+id/tvCancelledOrders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lvPickedUpOrders"
+        android:layout_margin="10dp"
+        android:text="Cancelled Orders: "
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/lvCancelledOrders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvCancelledOrders"
+        android:layout_margin="10dp">
+
+    </ListView>
+
+</RelativeLayout>
