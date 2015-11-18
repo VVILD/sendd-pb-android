@@ -387,7 +387,13 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                     allorders.setLocality(Pending_Orders_List.get(i).getBusiness_Order().getB_address());
                     allorders.setBusinessUserName(Pending_Orders_List.get(i).getBusiness_Order().getB_username());
                     allorders.setOrder_name(Pending_Orders_List.get(i).getBusiness_Order().getB_business_name());
-                    Date date = format.parse(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
+                    Date date;
+                    if(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time().length()>10){
+                         date = format2.parse(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
+                    }else{
+                         date = format.parse(Pending_Orders_List.get(i).getBusiness_Order().getPickup_time());
+                    }
+
                     String timeStamp = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
                     allorders.setPickupTime(timeStamp);
                     allorders.setIsBusiness(true);
@@ -406,7 +412,12 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
                 allorders.setCO(Pending_Orders_List.get(i).getCustomer_Order());
                 allorders.setCS(Pending_Orders_List.get(i).getCustomer_shipment());
                 allorders.setOrder_name(Pending_Orders_List.get(i).getCustomer_Order().getName());
-                Date date = format.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());
+                Date date;
+                if(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time().length()>10){
+                    date = format2.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());
+                }else{
+                    date = format.parse(Pending_Orders_List.get(i).getCustomer_Order().getPickup_time());
+                }
                 String timeStamp = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
                 allorders.setPickupTime(timeStamp);
                 allorders.setIsBusiness(false);
@@ -624,7 +635,8 @@ public class Activity_Orders extends AppCompatActivity implements SwipeRefreshLa
 
     public void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, LocationService.class));
+
+       //stopService(new Intent(this, LocationService.class));
     }
 
     public void onBackPressed() {

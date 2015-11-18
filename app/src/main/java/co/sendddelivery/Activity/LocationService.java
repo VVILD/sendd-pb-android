@@ -9,6 +9,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import java.util.Calendar;
+
 import co.sendddelivery.GetterandSetter.LocationParameters;
 import co.sendddelivery.Utils.NetworkUtils;
 import co.sendddelivery.Utils.Utils;
@@ -29,18 +32,19 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         intent = new Intent(BROADCAST_ACTION);
-        Log.i("LocationService","onCreate");
+        Log.i("LocationService", "onCreate");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60*5 , 500, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 60 * 5, 500, listener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 60 * 5, 500, listener);
         Log.i("onStartCommand", "onCreate");
         return START_NOT_STICKY;
     }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -85,6 +89,7 @@ public class LocationService extends Service {
         }
         return provider1.equals(provider2);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -93,36 +98,45 @@ public class LocationService extends Service {
 
     public class MyLocationListener implements LocationListener {
         public void onLocationChanged(final Location loc) {
-            if (isBetterLocation(loc, previousBestLocation)) {
-                LocationParameters lp = new LocationParameters();
-                lp.setLat(loc.getLatitude());
-                Log.i("MyLocationListener", "Pushed on network");
-                Utils newUtils =new Utils(getApplicationContext());
-                lp.setLon(loc.getLongitude());
-                lp.setPbuser("/pb_api/v1/pb_users/" + newUtils.getvalue("PhoneNumber") + "/");
-                mnetworkutils = new NetworkUtils(LocationService.this);
-                mnetworkutils.getapi().sendlocation(lp, new Callback<Response>() {
-                            @Override
-                            public void success(Response login, Response response1) {
-                                Log.i("Location", "Pushed on network");
 
+            Calendar c = Calendar.getInstance();
+            int hour_of_day = c.get(Calendar.HOUR_OF_DAY);
+            if (hour_of_day < 22 && hour_of_day > 10) {
+                if (isBetterLocation(loc, previousBestLocation)) {
+                    LocationParameters lp = new LocationParameters();
+                    lp.setLat(loc.getLatitude());
+                    Log.i("MyLocationListener", "Pushed on network");
+                    Utils newUtils = new Utils(getApplicationContext());
+                    lp.setLon(loc.getLongitude());
+                    lp.setPbuser("/pb_api/v1/pb_users/" + newUtils.getvalue("PhoneNumber") + "/");
+                    mnetworkutils = new NetworkUtils(LocationService.this);
+                    mnetworkutils.getapi().sendlocation(lp, new Callback<Response>() {
+                                @Override
+                                public void success(Response login, Response response1) {
+                                    Log.i("Location", "Pushed on network");
+
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    Log.i("Error:->", error.toString());
+                                }
                             }
-                            @Override
-                            public void failure(RetrofitError error) {
-                                Log.i("Error:->", error.toString());
-                            }
-                        }
-                );
-                intent.putExtra("Latitude", loc.getLatitude());
-                intent.putExtra("Longitude", loc.getLongitude());
-                intent.putExtra("Provider", loc.getProvider());
-                sendBroadcast(intent);
+                    );
+                    intent.putExtra("Latitude", loc.getLatitude());
+                    intent.putExtra("Longitude", loc.getLongitude());
+                    intent.putExtra("Provider", loc.getProvider());
+                    sendBroadcast(intent);
+                }
             }
         }
+
         public void onProviderDisabled(String provider) {
         }
+
         public void onProviderEnabled(String provider) {
         }
+
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     }

@@ -86,7 +86,7 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                         allotment_list1.setUsername(getIntent().getStringExtra("businessusername"));
                         allotment_list1.setValue(barcodevalue1);
                         if (!barcodes.contains(barcodevalue1)) {
-                            if (barcodevalue1.length() > 10 && barcodevalue1.length() < 14) {
+                            if (barcodevalue1.length() >= 10 && barcodevalue1.length() < 14) {
                                 arrBarcode.add(allotment_list1);
                                 barcodes.add(barcodevalue1);
                             } else {
@@ -145,7 +145,7 @@ public class Activity_business_scanned_orders extends AppCompatActivity {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    Toast.makeText(context, "There was a error in network connection. Please try again later.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "Barcode Already Scanned.", Toast.LENGTH_LONG).show();
                                 }
                             }
                     );
